@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Códigos QR para Imprimir — Búsqueda del Tesoro</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Special+Elite&display=swap" rel="stylesheet">
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    @media print {
+      .no-print {
+        display: none !important;
+      }
+      body {
+        background: #fff !important;
+        color: #000 !important;
+        padding: 0 !important;
+      }
+      .qr-card {
+        page-break-inside: avoid;
+        box-shadow: none !important;
+        border: 2px dashed #333 !important;
+      }
+    }
+
+    body {
+      font-family: 'Cinzel', Georgia, serif;
+      background: #f4efe6;
+      color: #21160a;
+    }
+
+    .font-typewriter {
+      font-family: 'Special Elite', Courier, monospace;
+    }
+
+    .qr-card {
+      background: #fffdfa;
+      border: 2px dashed #6b4c27;
+      border-radius: 6px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    }
+  </style>
+</head>
+<body class="p-4 sm:p-8 min-h-screen flex flex-col items-center">
+
+  <!-- Barra Superior de Acciones (No sale al imprimir) -->
+  <header class="no-print w-full max-w-4xl mb-8 flex flex-col sm:flex-row items-center justify-between gap-4 bg-[#21160a] text-[#dfcca6] p-4 sm:p-5 rounded-lg shadow-xl">
+    <div>
+      <h1 class="text-lg sm:text-xl font-bold tracking-wider uppercase text-amber-400">Lámina de Códigos QR para Imprimir</h1>
+      <p class="text-xs text-[#b8a68b] mt-0.5 font-typewriter">Imprimí, recortá por la línea de puntos y escondé cada marca en su lugar.</p>
+    </div>
+    <div class="flex items-center gap-3">
+      <a href="/" class="bg-[#382615] hover:bg-[#4d351e] text-[#dfcca6] border border-[#7d592e] px-4 py-2.5 rounded text-xs font-bold tracking-wider uppercase transition-all">
+        &larr; Volver al juego
+      </a>
+      <button onclick="window.print()" class="bg-amber-600 hover:bg-amber-500 text-white font-bold px-5 py-2.5 rounded text-xs tracking-widest uppercase shadow-md transition-all flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+        </svg>
+        <span>Imprimir Lámina</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Encabezado de página para impresión -->
+  <div class="w-full max-w-4xl text-center mb-6">
+    <span class="text-xs font-bold tracking-[0.25em] text-[#785327] uppercase">Búsqueda del Tesoro Secreta</span>
+    <h2 class="text-2xl sm:text-3xl font-black tracking-widest text-[#1e1307] mt-1 uppercase">Marcas de la Travesía</h2>
+    <p class="text-xs font-typewriter text-[#5c3e1e] mt-1">4 Códigos QR + 5to Destino Sorpresa Final</p>
+  </div>
+
+  <!-- Grilla de Tarjetas Recortables de QR -->
+  <main class="w-full max-w-4xl grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8 justify-items-center">
+
+    <!-- QR 1: Cocina / Chocolates Lindt -->
+    <article class="qr-card w-full max-w-[340px] p-6 flex flex-col items-center justify-between text-center relative">
+      <div class="absolute -top-3 left-4 bg-[#6b4c27] text-white text-[10px] font-bold px-2.5 py-0.5 rounded uppercase tracking-wider">
+        Paso 1
+      </div>
+      <div>
+        <h3 class="text-lg font-black tracking-wider text-[#1e1307] uppercase">Pista I — Cocina</h3>
+        <p class="text-xs font-bold text-amber-800 uppercase tracking-widest mt-0.5">Caja Chocolates Lindt</p>
+        <p class="text-xs font-typewriter text-[#4d3821] mt-2 mb-4 bg-amber-50 p-2 border border-amber-200/60 rounded italic">
+          "Pegar adentro de la caja de chocolates Lindt en el mueble de la cocina."
+        </p>
+      </div>
+
+      <div class="p-3 bg-white border border-[#c4a984] rounded shadow-sm my-1">
+        <img class="w-48 h-48 block" 
+             src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=CLAVE_LINDT_COCINA&color=25-15-10" 
+             alt="QR CLAVE_LINDT_COCINA">
+      </div>
+
+      <div class="mt-4 pt-3 border-t border-[#6b4c27]/20 w-full">
+        <span class="font-mono font-bold text-xs text-[#1e1307] tracking-wider bg-amber-100/70 px-2 py-1 rounded">
+          CLAVE_LINDT_COCINA
+        </span>
+      </div>
+    </article>
+
+    <!-- QR 2: Dormitorio / Mesita de luz izquierda -->
+    <article class="qr-card w-full max-w-[340px] p-6 flex flex-col items-center justify-between text-center relative">
+      <div class="absolute -top-3 left-4 bg-[#6b4c27] text-white text-[10px] font-bold px-2.5 py-0.5 rounded uppercase tracking-wider">
+        Paso 2
+      </div>
+      <div>
+        <h3 class="text-lg font-black tracking-wider text-[#1e1307] uppercase">Pista II — Dormitorio</h3>
+        <p class="text-xs font-bold text-amber-800 uppercase tracking-widest mt-0.5">Mesita de Luz Izquierda</p>
+        <p class="text-xs font-typewriter text-[#4d3821] mt-2 mb-4 bg-amber-50 p-2 border border-amber-200/60 rounded italic">
+          "Pegar dentro del cajón de la mesita de luz izquierda, junto a los pañuelos."
+        </p>
+      </div>
+
+      <div class="p-3 bg-white border border-[#c4a984] rounded shadow-sm my-1">
+        <img class="w-48 h-48 block" 
+             src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=CLAVE_MESITA_LUZ&color=25-15-10" 
+             alt="QR CLAVE_MESITA_LUZ">
+      </div>
+
+      <div class="mt-4 pt-3 border-t border-[#6b4c27]/20 w-full">
+        <span class="font-mono font-bold text-xs text-[#1e1307] tracking-wider bg-amber-100/70 px-2 py-1 rounded">
+          CLAVE_MESITA_LUZ
+        </span>
+      </div>
+    </article>
+
+    <!-- QR 3: Baño / Debajo del canasto de la ropa -->
+    <article class="qr-card w-full max-w-[340px] p-6 flex flex-col items-center justify-between text-center relative">
+      <div class="absolute -top-3 left-4 bg-[#6b4c27] text-white text-[10px] font-bold px-2.5 py-0.5 rounded uppercase tracking-wider">
+        Paso 3
+      </div>
+      <div>
+        <h3 class="text-lg font-black tracking-wider text-[#1e1307] uppercase">Pista III — Baño</h3>
+        <p class="text-xs font-bold text-amber-800 uppercase tracking-widest mt-0.5">Canasto de la Ropa</p>
+        <p class="text-xs font-typewriter text-[#4d3821] mt-2 mb-4 bg-amber-50 p-2 border border-amber-200/60 rounded italic">
+          "Pegar en la base o justo debajo del canasto de la ropa del baño."
+        </p>
+      </div>
+
+      <div class="p-3 bg-white border border-[#c4a984] rounded shadow-sm my-1">
+        <img class="w-48 h-48 block" 
+             src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=CLAVE_CANASTO_BANO&color=25-15-10" 
+             alt="QR CLAVE_CANASTO_BANO">
+      </div>
+
+      <div class="mt-4 pt-3 border-t border-[#6b4c27]/20 w-full">
+        <span class="font-mono font-bold text-xs text-[#1e1307] tracking-wider bg-amber-100/70 px-2 py-1 rounded">
+          CLAVE_CANASTO_BANO
+        </span>
+      </div>
+    </article>
+
+    <!-- QR 4: Heladera / Abajo de los chocolates -->
+    <article class="qr-card w-full max-w-[340px] p-6 flex flex-col items-center justify-between text-center relative">
+      <div class="absolute -top-3 left-4 bg-[#6b4c27] text-white text-[10px] font-bold px-2.5 py-0.5 rounded uppercase tracking-wider">
+        Paso 4 (Último QR)
+      </div>
+      <div>
+        <h3 class="text-lg font-black tracking-wider text-[#1e1307] uppercase">Pista IV — Heladera</h3>
+        <p class="text-xs font-bold text-amber-800 uppercase tracking-widest mt-0.5">Abajo de los Chocolates</p>
+        <p class="text-xs font-typewriter text-[#4d3821] mt-2 mb-4 bg-amber-50 p-2 border border-amber-200/60 rounded italic">
+          "Pegar dentro de la heladera, resguardado debajo de los chocolates."
+        </p>
+      </div>
+
+      <div class="p-3 bg-white border border-[#c4a984] rounded shadow-sm my-1">
+        <img class="w-48 h-48 block" 
+             src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=CLAVE_HELADERA_CHOCOLATES&color=25-15-10" 
+             alt="QR CLAVE_HELADERA_CHOCOLATES">
+      </div>
+
+      <div class="mt-4 pt-3 border-t border-[#6b4c27]/20 w-full">
+        <span class="font-mono font-bold text-xs text-[#1e1307] tracking-wider bg-amber-100/70 px-2 py-1 rounded">
+          CLAVE_HELADERA_CHOCOLATES
+        </span>
+      </div>
+    </article>
+
+  </main>
+
+  <!-- Tarjeta informativa del 5to lugar final -->
+  <footer class="w-full max-w-4xl mt-8 p-5 bg-[#e8ded0] border-2 border-[#826138] rounded text-center">
+    <span class="text-xs font-black tracking-widest text-[#785327] uppercase">&star; Quinto Destino Final (Sin QR) &star;</span>
+    <h4 class="text-base font-bold text-[#1e1307] mt-1">LUGAR DEL REGALO REAL DEFINITIVO</h4>
+    <p class="font-typewriter text-sm text-[#3b2713] mt-1">
+      "Dentro de la caja de <strong>Luccianos</strong>, en la <strong>mesita de luz de la derecha</strong>."
+    </p>
+    <p class="text-[11px] text-[#6b4e28] mt-1 italic">
+      Al escanear el QR 4, el celular le mostrará automáticamente este mensaje para que encuentre su regalo.
+    </p>
+  </footer>
+
+</body>
+</html>

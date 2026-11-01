@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>El Botín Oculto</title>
+  
+  <!-- Tipografías Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800;900&family=Special+Elite&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- html5-qrcode CDN -->
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
+  <style>
+    * {
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #08080a;
+      background-image: 
+        radial-gradient(circle at 50% 30%, rgba(38, 26, 15, 0.45) 0%, transparent 75%),
+        radial-gradient(circle at 50% 90%, rgba(10, 8, 12, 0.9) 0%, transparent 80%),
+        url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      color: #dfcca6;
+      font-family: 'Cinzel', Georgia, serif;
+    }
+
+    .font-typewriter {
+      font-family: 'Special Elite', Courier, monospace;
+    }
+
+    /* Pergamino inmersivo */
+    .parchment {
+      background-color: #dfcca6;
+      background-image: 
+        radial-gradient(ellipse at center, rgba(246, 235, 210, 0.96) 0%, rgba(214, 189, 144, 0.92) 75%, rgba(168, 134, 85, 0.98) 100%),
+        url("data:image/svg+xml,%3Csvg viewBox='0 0 300 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.55' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0.35 0 0 0 0 0.25 0 0 0 0 0.15 0 0 0 0.12 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      color: #21160a;
+      border: 3px double #4e361d;
+      box-shadow: 
+        inset 0 0 50px rgba(50, 30, 10, 0.45),
+        inset 0 0 100px rgba(25, 15, 5, 0.25),
+        0 15px 40px rgba(0, 0, 0, 0.9),
+        0 0 4px 1px rgba(163, 124, 63, 0.3);
+      position: relative;
+    }
+
+    .parchment::before {
+      content: "";
+      position: absolute;
+      inset: 8px;
+      border: 1px solid rgba(82, 54, 25, 0.45);
+      pointer-events: none;
+    }
+
+    .corner-mark {
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      border: 2px solid #5a3d1c;
+      pointer-events: none;
+    }
+    .corner-tl { top: 12px; left: 12px; border-right: none; border-bottom: none; }
+    .corner-tr { top: 12px; right: 12px; border-left: none; border-bottom: none; }
+    .corner-bl { bottom: 12px; left: 12px; border-right: none; border-top: none; }
+    .corner-br { bottom: 12px; right: 12px; border-left: none; border-top: none; }
+
+    /* Botones rústicos */
+    .btn-rustic {
+      background: linear-gradient(180deg, #382615 0%, #1c1309 100%);
+      color: #ead8b8;
+      border: 1px solid #7d592e;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+      transition: all 0.18s ease;
+      letter-spacing: 0.12em;
+    }
+    .btn-rustic:active {
+      transform: scale(0.98);
+      background: #140d06;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), inset 0 2px 6px rgba(0,0,0,0.8);
+    }
+
+    .btn-rustic-secondary {
+      background: rgba(45, 30, 16, 0.12);
+      color: #4a341b;
+      border: 1px dashed #7a582e;
+      transition: all 0.2s ease;
+    }
+    .btn-rustic-secondary:active {
+      background: rgba(45, 30, 16, 0.25);
+    }
+
+    
+    /* =========================================
+       HADA MÍSTICA PREMIUM CON MOVIMIENTO FLUIDO
+       ========================================= */
+    #fairy-entity {
+      position: absolute;
+      width: 85px;
+      height: 85px;
+      pointer-events: auto;
+      z-index: 40;
+      transition: left 0.85s cubic-bezier(0.34, 1.56, 0.64, 1), 
+                  top 0.85s cubic-bezier(0.34, 1.56, 0.64, 1), 
+                  transform 0.5s ease;
+      cursor: pointer;
+      filter: drop-shadow(0 0 16px rgba(251, 191, 36, 0.55));
+    }
+
+    @keyframes wingHoverL {
+      0%, 100% { transform: rotate(0deg) scaleX(1); opacity: 0.85; }
+      50% { transform: rotate(-35deg) scaleX(0.5); opacity: 0.5; }
+    }
+    @keyframes wingHoverR {
+      0%, 100% { transform: rotate(0deg) scaleX(1); opacity: 0.85; }
+      50% { transform: rotate(35deg) scaleX(0.5); opacity: 0.5; }
+    }
+    .wing-premium-l {
+      transform-origin: 35px 33px;
+      animation: wingHoverL 0.16s ease-in-out infinite;
+    }
+    .wing-premium-r {
+      transform-origin: 47px 33px;
+      animation: wingHoverR 0.16s ease-in-out infinite;
+    }
+
+    /* Halo pulsante místico */
+    @keyframes auraPulse {
+      0%, 100% { transform: scale(1); opacity: 0.45; }
+      50% { transform: scale(1.25); opacity: 0.85; }
+    }
+    .fairy-aura {
+      animation: auraPulse 1.8s ease-in-out infinite;
+    }
+
+    /* =========================================
+       PARTÍCULAS MÁGICAS (ESTELA Y POLVO DE HADAS)
+       ========================================= */
+    .magic-particle {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 38;
+      box-shadow: 0 0 10px #f59e0b, 0 0 20px #fbbf24;
+      animation: particleDecay 0.95s cubic-bezier(0.2, 0.8, 0.4, 1) forwards;
+    }
+    @keyframes particleDecay {
+      0% {
+        opacity: 1;
+        transform: translate(0, 0) scale(1) rotate(0deg);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(var(--dx), var(--dy)) scale(0.1) rotate(180deg);
+      }
+    }
+
+    
+    /* =========================================
+       GLOBITO FLOTANTE DINÁMICO QUE SIGUE AL HADA
+       ========================================= */
+    .comic-floating-bubble {
+      width: 210px;
+      max-width: 80vw;
+      background: #fffdf5;
+      border: 2px solid #4a341b;
+      border-radius: 18px;
+      box-shadow: 0 10px 25px rgba(28, 17, 8, 0.35), inset 0 1px 0 rgba(255,255,255,0.9);
+      position: absolute;
+    }
+
+    .bubble-tail {
+      position: absolute;
+      width: 0;
+      height: 0;
+      border-style: solid;
+      transition: all 0.5s ease;
+    }
+
+    /* Colita cuando el globo esta DEBAJO del hada (apunta hacia arriba) */
+    .tail-top {
+      top: -12px;
+      left: var(--tail-offset, 25px);
+      border-width: 0 10px 12px 10px;
+      border-color: transparent transparent #4a341b transparent;
+    }
+    .tail-top::after {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: -8px;
+      border-width: 0 8px 10px 8px;
+      border-style: solid;
+      border-color: transparent transparent #fffdf5 transparent;
+    }
+
+    /* Colita cuando el globo esta ARRIBA del hada (apunta hacia abajo) */
+    .tail-bottom {
+      bottom: -12px;
+      left: var(--tail-offset, 25px);
+      border-width: 12px 10px 0 10px;
+      border-color: #4a341b transparent transparent transparent;
+    }
+    .tail-bottom::after {
+      content: "";
+      position: absolute;
+      top: -12px;
+      left: -8px;
+      border-width: 10px 8px 0 8px;
+      border-style: solid;
+      border-color: #fffdf5 transparent transparent transparent;
+    }
+
+    /* Sacudida de error */
+    @keyframes dryShake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-8px); }
+      40% { transform: translateX(8px); }
+      60% { transform: translateX(-5px); }
+      80% { transform: translateX(5px); }
+    }
+    .shake-anim {
+      animation: dryShake 0.4s ease-in-out;
+    }
+
+    /* Scanner de QR */
+    #qr-reader {
+      border: 2px solid #5a3d1c !important;
+      background: #0d0b09;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    #qr-reader video {
+      object-fit: cover !important;
+      border-radius: 2px;
+    }
+
+    .screen-fade {
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+    .screen-hidden {
+      opacity: 0;
+      transform: scale(0.98);
+      pointer-events: none;
+      display: none !important;
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 4px 12px rgba(0,0,0,0.5), 0 0 0 rgba(163, 124, 63, 0); }
+      50% { box-shadow: 0 4px 14px rgba(0,0,0,0.6), 0 0 10px rgba(163, 124, 63, 0.35); }
+    }
+    .pulse-action {
+      animation: pulseGlow 2.8s infinite ease-in-out;
+    }
+  </style>
+  <!-- AUDIO REAL ORQUESTAL PIRATAS DEL CARIBE -->
+  <audio id="bg-music" src="/piratas.mp3" loop preload="auto"></audio>
+</head>
+<body class="h-full w-full flex flex-col items-center justify-center p-3 sm:p-5 overflow-hidden relative">
+
+
+
+  <!-- Contenedor Principal: Pergamino que ocupa casi todo el alto del celular -->
+  <main class="w-full max-w-md h-[95vh] max-h-[820px] flex flex-col relative z-20">
+    <div id="parchment-card" class="parchment w-full h-full p-5 sm:p-7 rounded-sm flex flex-col justify-between relative overflow-hidden transition-all duration-300">
+      
+      <!-- Esquineros labrados -->
+      <div class="corner-mark corner-tl"></div>
+      <div class="corner-mark corner-tr"></div>
+      <div class="corner-mark corner-bl"></div>
+      <div class="corner-mark corner-br"></div>
+
+      <!-- Marca de agua de fondo -->
+      <div class="absolute inset-0 flex items-center justify-center opacity-[0.035] pointer-events-none">
+        <svg class="w-80 h-80" viewBox="0 0 100 100" fill="currentColor">
+          <circle cx="50" cy="50" r="48" stroke="#000" stroke-width="1.5" fill="none"/>
+          <path d="M50 0 L54 46 L100 50 L54 54 L50 100 L46 54 L0 50 L46 46 Z"/>
+        </svg>
+      </div>
+
+      <!-- ==============================================
+           ESTADO 1: PANTALLA INICIAL CON HADA VOLADORA
+           ============================================== -->
+      <div id="screen-intro" class="screen-fade flex-1 flex flex-col justify-between py-1 relative z-10 cursor-pointer">
+        
+        <!-- Encabezado simple -->
+        <div class="text-center pt-1">
+          <span class="text-[11px] font-bold tracking-[0.25em] text-[#785327] uppercase">Búsqueda Secreta</span>
+          <h1 class="text-2xl sm:text-3xl font-black tracking-wider text-[#1e1307]">EL BOTÍN</h1>
+          <div class="w-14 h-0.5 bg-[#785226]/50 mx-auto mt-1"></div>
+        </div>
+
+        <!-- Área interactiva del Hada y Diálogos secuenciales -->
+        <div id="fairy-flight-zone" onclick="advanceFairyDialogue(event)" class="my-auto relative h-[380px] w-full cursor-pointer select-none overflow-visible">
+          
+          <!-- HADA MÍSTICA PREMIUM ILUSTRADA -->
+          <div id="fairy-entity" class="transition-all duration-700 ease-out" title="Tocá para continuar">
+            <div class="relative w-full h-full flex items-center justify-center">
+              <!-- Aura celestial brillante -->
+              <div class="fairy-aura absolute -inset-3 bg-amber-300/35 rounded-full blur-lg pointer-events-none"></div>
+              <div class="absolute -inset-1 bg-yellow-200/50 rounded-full blur-sm pointer-events-none"></div>
+
+              <svg class="w-full h-full relative" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- Alas traseras superiores e inferiores con transparencias de hada y vetas de cristal -->
+                <g class="wing-premium-l">
+                  <!-- Ala superior izquierda -->
+                  <path d="M43 40 C32 18, 10 16, 8 28 C6 38, 26 44, 43 44 Z" fill="url(#wingGrad1)" stroke="#b45309" stroke-width="0.8" fill-opacity="0.85"/>
+                  <path d="M40 40 C28 26, 18 24, 12 30" stroke="#fef08a" stroke-width="0.7" opacity="0.8"/>
+                  <path d="M38 41 C24 35, 18 38, 14 36" stroke="#fef08a" stroke-width="0.5" opacity="0.6"/>
+                  <!-- Ala inferior izquierda -->
+                  <path d="M43 45 C30 52, 14 62, 18 70 C24 76, 38 58, 43 47 Z" fill="url(#wingGrad2)" stroke="#b45309" stroke-width="0.8" fill-opacity="0.75"/>
+                  <path d="M41 46 C32 54, 24 64, 21 68" stroke="#fef08a" stroke-width="0.6" opacity="0.7"/>
+                </g>
+
+                <g class="wing-premium-r">
+                  <!-- Ala superior derecha -->
+                  <path d="M57 40 C68 18, 90 16, 92 28 C94 38, 74 44, 57 44 Z" fill="url(#wingGrad1)" stroke="#b45309" stroke-width="0.8" fill-opacity="0.85"/>
+                  <path d="M60 40 C72 26, 82 24, 88 30" stroke="#fef08a" stroke-width="0.7" opacity="0.8"/>
+                  <path d="M62 41 C76 35, 82 38, 86 36" stroke="#fef08a" stroke-width="0.5" opacity="0.6"/>
+                  <!-- Ala inferior derecha -->
+                  <path d="M57 45 C70 52, 86 62, 82 70 C76 76, 62 58, 57 47 Z" fill="url(#wingGrad2)" stroke="#b45309" stroke-width="0.8" fill-opacity="0.75"/>
+                  <path d="M59 46 C68 54, 76 64, 79 68" stroke="#fef08a" stroke-width="0.6" opacity="0.7"/>
+                </g>
+
+                <!-- Definición de gradientes para las alas mágicas -->
+                <defs>
+                  <linearGradient id="wingGrad1" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#fffbeb"/>
+                    <stop offset="50%" stop-color="#fef08a"/>
+                    <stop offset="100%" stop-color="#f59e0b" stop-opacity="0.6"/>
+                  </linearGradient>
+                  <linearGradient id="wingGrad2" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#fef9c3"/>
+                    <stop offset="100%" stop-color="#d97706" stop-opacity="0.5"/>
+                  </linearGradient>
+                </defs>
+
+                <!-- Cuerpo del Hada: Vestido de pétalos y silueta grácil -->
+                <path d="M50 48 L42 72 C46 76, 54 76, 58 72 Z" fill="#2d4a22" stroke="#1b3014" stroke-width="0.8"/>
+                <path d="M47 52 L50 74 L53 52 Z" fill="#3f6630"/>
+                
+                <line x1="48" y1="73" x2="47" y2="84" stroke="#d49b6a" stroke-width="1.8" stroke-linecap="round"/>
+                <line x1="52" y1="73" x2="53" y2="83" stroke="#d49b6a" stroke-width="1.8" stroke-linecap="round"/>
+
+                <path d="M47 38 L53 38 L52 49 L48 49 Z" fill="#2d4a22"/>
+                <path d="M48 37 L52 37 L51 44 L49 44 Z" fill="#e2ad7a"/>
+
+                <circle cx="50" cy="30" r="6" fill="#eab683"/>
+                <path d="M45 30 L40 27 L45 32 Z" fill="#eab683"/>
+                <path d="M55 30 L60 27 L55 32 Z" fill="#eab683"/>
+                
+                <ellipse cx="48" cy="30" rx="0.7" ry="0.9" fill="#2c1a08"/>
+                <ellipse cx="52" cy="30" rx="0.7" ry="0.9" fill="#2c1a08"/>
+                <path d="M49 33 Q50 34 51 33" stroke="#8b4513" stroke-width="0.6" fill="none"/>
+
+                <path d="M44 29 C44 21, 56 21, 56 29 C58 33, 56 36, 50 36 C44 36, 42 33, 44 29 Z" fill="#42250d"/>
+                <path d="M44 30 C41 38, 40 45, 36 50 C41 47, 46 41, 46 34 Z" fill="#42250d"/>
+                <circle cx="50" cy="24" r="1.5" fill="#fef08a"/>
+                <circle cx="47" cy="25" r="1" fill="#fef08a"/>
+                <circle cx="53" cy="25" r="1" fill="#fef08a"/>
+
+                <path d="M47 40 L41 46" stroke="#d49b6a" stroke-width="1.6" stroke-linecap="round"/>
+                <path d="M53 40 L62 43" stroke="#d49b6a" stroke-width="1.6" stroke-linecap="round"/>
+                <line x1="61" y1="46" x2="67" y2="35" stroke="#f59e0b" stroke-width="1.2" stroke-linecap="round"/>
+                <polygon points="67,31 68,34 71,35 68,36 67,39 66,36 63,35 66,34" fill="#ffffff" stroke="#fef08a" stroke-width="0.5"/>
+                <circle cx="67" cy="35" r="2.5" fill="#fff" opacity="0.8"/>
+              </svg>
+            </div>
+          </div>
+
+          <!-- GLOBITO FLOTANTE DINÁMICO QUE SIGUE AL HADA POR LA PANTALLA -->
+          <div id="fairy-speech-bubble" class="comic-floating-bubble absolute pointer-events-none transition-all duration-700 ease-out z-30">
+            <div class="bubble-content p-3 sm:p-4 text-center">
+              <p id="fairy-text" class="font-typewriter text-[#251508] text-sm sm:text-base leading-snug font-bold transition-opacity duration-200">
+                "¡Hola! Iván te preparó una sorpresa, pero no te la va a hacer tan fácil..."
+              </p>
+              <div class="flex items-center justify-between text-[10px] tracking-wider text-[#7a5529] uppercase mt-2 pt-1 border-t border-[#7a5529]/20 font-bold">
+                <span id="fairy-step-counter">1 / 4</span>
+                <span class="animate-pulse">Tocá ▸</span>
+              </div>
+            </div>
+            <!-- Colita del globo que apunta al hada -->
+            <div id="bubble-pointer" class="bubble-tail"></div>
+          </div>
+        </div>
+
+        <!-- Acciones Claras -->
+        <div class="pb-1 space-y-3">
+                    <button id="btn-accept" type="button" class="btn-rustic pulse-action w-full py-4 px-4 font-bold text-base tracking-widest uppercase flex items-center justify-center gap-2 cursor-pointer relative z-50">
+            <span>[ Avanzar ]</span>
+          </button>
+
+
+        </div>
+      </div>
+
+      <!-- ==============================================
+           ESTADO 2: PANTALLA DE PISTAS
+           ============================================== -->
+      <div id="screen-clue" class="screen-fade screen-hidden flex-1 flex flex-col justify-between py-2 relative z-10">
+        <div>
+          <!-- Barra de Progreso Visual y Romana -->
+          <div class="pb-3 border-b border-[#826138]/40 mb-3">
+            <div class="flex items-center justify-between mb-2">
+              <span id="clue-roman-indicator" class="text-xs sm:text-sm font-black tracking-[0.2em] text-[#2c1a08] uppercase">
+                MARCA I DE IV
+              </span>
+              <div class="flex items-center gap-1.5" id="progress-dots"></div>
+            </div>
+          </div>
+
+          <div class="text-center my-2">
+            <h2 id="clue-title" class="text-lg font-bold tracking-widest text-[#24170b] uppercase">Pista I</h2>
+          </div>
+
+          <div class="my-4 p-5 sm:p-6 bg-[#d5bf95]/60 border border-[#85633a]/40 shadow-inner min-h-[170px] sm:min-h-[200px] flex items-center justify-center text-center">
+            <p id="clue-riddle" class="font-typewriter text-[#221509] text-lg sm:text-xl leading-relaxed font-semibold"></p>
+          </div>
+
+          <div id="clue-feedback" class="text-center text-xs font-bold tracking-wider py-1.5 px-2 rounded opacity-0 transition-opacity duration-300 min-h-[28px]">
+            &nbsp;
+          </div>
+        </div>
+
+        <!-- Input de cámara nativo que abre la cámara de fotos en celulares o selector en PC -->
+        <input type="file" id="camera-file-input" accept="image/*" capture="environment" class="hidden" onchange="handlePhotoCaptured(this)">
+
+        <div class="pb-1 space-y-2.5">
+          <!-- Vista previa mini de foto si se quiere -->
+          <div id="photo-preview-wrap" class="hidden w-28 h-28 mx-auto mb-2 border-2 border-[#7a582e] p-1 bg-black rounded shadow-md overflow-hidden relative">
+            <img id="photo-preview-img" class="w-full h-full object-cover rounded" alt="Foto capturada">
+          </div>
+
+          <button id="btn-take-photo" type="button" onclick="triggerCameraCapture()" class="btn-rustic pulse-action w-full py-4 px-4 font-bold text-base tracking-widest uppercase flex items-center justify-center gap-2.5 cursor-pointer relative z-50">
+            <!-- Icono de cámara sobria -->
+            <svg class="w-6 h-6 opacity-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+            <span id="btn-photo-text">[ Sacar Foto del Objeto ]</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- ==============================================
+           ESTADO 3: VISOR QR INTEGRADO
+           ============================================== -->
+      <div id="screen-scanner" class="screen-fade screen-hidden flex-1 flex flex-col justify-between py-2 relative z-10">
+        <div>
+          <div class="text-center pb-2 border-b border-[#826138]/40 mb-3 flex items-center justify-between">
+            <span class="text-xs font-bold tracking-widest text-[#5c3e1e] uppercase">Escanear QR</span>
+            <span class="text-xs font-bold tracking-widest text-[#3b2713] uppercase animate-pulse">Cámara activa</span>
+          </div>
+
+          <div class="relative w-full aspect-square max-w-[280px] mx-auto bg-black border-2 border-[#52391e] overflow-hidden shadow-2xl">
+            <div id="qr-reader" class="w-full h-full"></div>
+            <div class="absolute inset-0 border border-[#a6824a]/30 pointer-events-none flex items-center justify-center">
+              <div class="w-36 h-36 border border-[#a6824a]/60 relative">
+                <div class="absolute -top-1 -left-1 w-3.5 h-3.5 border-t-2 border-l-2 border-[#d97706]"></div>
+                <div class="absolute -top-1 -right-1 w-3.5 h-3.5 border-t-2 border-r-2 border-[#d97706]"></div>
+                <div class="absolute -bottom-1 -left-1 w-3.5 h-3.5 border-b-2 border-l-2 border-[#d97706]"></div>
+                <div class="absolute -bottom-1 -right-1 w-3.5 h-3.5 border-b-2 border-r-2 border-[#d97706]"></div>
+              </div>
+            </div>
+          </div>
+
+          <div id="scanner-status" class="mt-3 text-center text-xs font-typewriter text-[#5c3e1e] min-h-[22px]">
+            Apuntá hacia la marca...
+          </div>
+        </div>
+
+        <div class="pb-1">
+          <button id="btn-close-scanner" type="button" class="btn-rustic-secondary w-full py-3 px-3 font-semibold text-xs tracking-widest uppercase cursor-pointer">
+            [ Volver a la pista ]
+          </button>
+        </div>
+      </div>
+
+      <!-- ==============================================
+           ESTADO 4: PANTALLA FINAL (VICTORIA)
+           ============================================== -->
+      <div id="screen-victory" class="screen-fade screen-hidden flex-1 flex flex-col justify-between py-2 text-center relative z-10">
+        <div class="my-auto">
+          <div class="w-16 h-16 mx-auto mb-3 flex items-center justify-center border-2 border-[#694821] bg-[#cfb482]/60 rounded-full shadow-inner">
+            <svg class="w-9 h-9 text-[#422d14]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+            </svg>
+          </div>
+
+          <span class="text-xs font-black tracking-[0.25em] text-[#5c3e1e] uppercase">Fin del Mapa</span>
+          <h2 class="text-2xl font-black tracking-wider text-[#1e1408] mt-1 mb-4">¡ENCONTRASTE EL BOTÍN!</h2>
+
+          <div class="p-5 bg-[#d5be94]/60 border border-[#7d5b30]/40 font-typewriter text-center text-sm text-[#26190c] leading-relaxed space-y-2.5">
+            <p class="font-bold text-[#1a1107] text-base uppercase tracking-wider">
+              ¡Completaste las 4 Fotos!
+            </p>
+            <p class="text-sm text-[#3b2713]">
+              Llegaste al 5to y último destino. La sorpresa te espera acá:
+            </p>
+            <p class="text-base sm:text-lg font-black italic text-[#241304] bg-[#cbb281]/70 p-3 border-2 border-[#734e23] rounded shadow-sm">
+              "Buscá dentro de la caja de Luccianos, en la mesita de luz de la derecha."
+            </p>
+            <p class="text-xs text-[#543b1f] font-semibold pt-1">
+              ¡Que disfrutes tu sorpresa!
+            </p>
+          </div>
+        </div>
+
+        <div class="pb-1">
+          <button onclick="resetGame()" class="btn-rustic w-full py-3.5 px-4 font-bold text-xs tracking-widest uppercase">
+            [ Reiniciar travesía ]
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+
+
+
+  </main>
+
+  <!-- MOTOR DE AUDIO: MP3 ORQUESTAL PIRATAS DEL CARIBE -->
+  <script>
+    const AudioEngine = {
+      audioEl: null,
+      isMusicPlaying: false,
+
+      init() {
+        if (!this.audioEl) {
+          this.audioEl = document.getElementById("bg-music");
+          if (this.audioEl) {
+            this.audioEl.volume = 0.75;
+          }
+        }
+      },
+
+      startAdventureMusic() {
+        try {
+          this.init();
+          if (this.audioEl) {
+            const promise = this.audioEl.play();
+            if (promise !== undefined) {
+              promise.then(() => {
+                this.isMusicPlaying = true;
+              }).catch(error => {
+                console.log("Audio esperando gesto:", error);
+              });
+            }
+          }
+        } catch(e) {}
+      },
+
+      playTick() {},
+      playSuccessCoin() {},
+      playErrorThud() {},
+      playFairyChime() {}
+    };
+
+    window.addEventListener("DOMContentLoaded", () => {
+      AudioEngine.startAdventureMusic();
+    });
+
+    // Como iOS Safari y Android Chrome bloquean audio no solicitado hasta el 1er toque,
+    // activamos la música con CUALQUIER toque a la pantalla (incluso el primer scroll o tap)
+    const unlockAudio = () => {
+      AudioEngine.startAdventureMusic();
+      window.removeEventListener("touchstart", unlockAudio);
+      window.removeEventListener("click", unlockAudio);
+      window.removeEventListener("pointerdown", unlockAudio);
+    };
+
+    window.addEventListener("touchstart", unlockAudio, { passive: true });
+    window.addEventListener("click", unlockAudio, { passive: true });
+    window.addEventListener("pointerdown", unlockAudio, { passive: true });
+
+  
+
+    const FAIRY_DIALOGUES = [
+      {
+        text: "\"¡Hola! Iván te preparó una sorpresa, pero no te la va a hacer tan fácil...\"",
+        fairy: { x: 25, y: 30, tilt: 6, flip: 1 },
+        bubble: { x: 105, y: 15, tail: "tail-top", tailOffset: "18px" }
+      },
+      {
+        text: "\"Vas a tener que encontrar 4 objetos especiales por la casa y sacarles una foto.\"",
+        fairy: { x: 215, y: 45, tilt: -8, flip: -1 },
+        bubble: { x: 15, y: 30, tail: "tail-top", tailOffset: "155px" }
+      },
+      {
+        text: "\"Leé cada pista, capturá la foto del objeto y avanzá al siguiente destino.\"",
+        fairy: { x: 205, y: 220, tilt: 6, flip: -1 },
+        bubble: { x: 15, y: 120, tail: "tail-bottom", tailOffset: "155px" }
+      },
+      {
+        text: "\"Al completar las 4 fotos, se revela el 5to lugar donde está la sorpresa real.\"",
+        fairy: { x: 30, y: 210, tilt: -5, flip: 1 },
+        bubble: { x: 110, y: 125, tail: "tail-bottom", tailOffset: "18px" }
+      }
+    ];
+
+    let currentFairyIndex = 0;
+    let lastFairyPos = { x: 25, y: 35 };
+
+    function emitMagicTrail(startX, startY, endX, endY, container) {
+      const particleCount = 20;
+      const duration = 750;
+
+      for (let i = 0; i < particleCount; i++) {
+        setTimeout(() => {
+          const progress = i / particleCount;
+          const currX = startX + (endX - startX) * progress + (Math.sin(progress * Math.PI) * 18);
+          const currY = startY + (endY - startY) * progress - (Math.sin(progress * Math.PI) * 14);
+
+          const p = document.createElement("div");
+          p.className = "magic-particle";
+
+          const size = Math.random() * 6 + 3;
+          p.style.width = size + "px";
+          p.style.height = size + "px";
+          p.style.left = (currX + (Math.random() * 16 - 8)) + "px";
+          p.style.top = (currY + (Math.random() * 16 - 8)) + "px";
+
+          const colors = ["#ffffff", "#fef08a", "#fde047", "#f59e0b", "#fbbf24"];
+          p.style.background = colors[Math.floor(Math.random() * colors.length)];
+
+          const dx = (Math.random() * 30 - 15) + "px";
+          const dy = (Math.random() * 25 + 10) + "px";
+          p.style.setProperty("--dx", dx);
+          p.style.setProperty("--dy", dy);
+
+          container.appendChild(p);
+          setTimeout(() => { if (p && p.remove) p.remove(); else if (p && p.parentNode) p.parentNode.removeChild(p); }, 950);
+        }, (i * (duration / particleCount)));
+      }
+    }
+
+    function moveFairyToPosition(data) {
+      const fairy = document.getElementById("fairy-entity");
+      const bubble = document.getElementById("fairy-speech-bubble");
+      const tail = document.getElementById("bubble-pointer");
+      const zone = document.getElementById("fairy-flight-zone");
+      if (!fairy || !zone || !bubble) return;
+
+      const zoneWidth = zone.clientWidth || 300;
+      
+      const finalFairyX = Math.min(data.fairy.x, Math.max(zoneWidth - 90, 10));
+      const finalFairyY = data.fairy.y;
+
+      const finalBubbleX = Math.min(data.bubble.x, Math.max(zoneWidth - 225, 10));
+      const finalBubbleY = data.bubble.y;
+
+      emitMagicTrail(lastFairyPos.x + 42, lastFairyPos.y + 42, finalFairyX + 42, finalFairyY + 42, zone);
+      lastFairyPos = { x: finalFairyX, y: finalFairyY };
+
+      // El hada se mueve volando
+      fairy.style.left = finalFairyX + "px";
+      fairy.style.top = finalFairyY + "px";
+      fairy.style.transform = `scaleX(${data.fairy.flip}) rotate(${data.fairy.tilt}deg)`;
+
+      // El globito de texto también se mueve a la posición correspondiente
+      bubble.style.left = finalBubbleX + "px";
+      bubble.style.top = finalBubbleY + "px";
+
+      if (tail) {
+        tail.className = "bubble-tail " + data.bubble.tail;
+        tail.style.setProperty("--tail-offset", data.bubble.tailOffset);
+      }
+    }
+
+        function advanceFairyDialogue(event) {
+      if (event) {
+        event.stopPropagation();
+      }
+
+      try {
+        AudioEngine.startAdventureMusic();
+      } catch(e) {}
+
+      try {
+        triggerHaptic([35]);
+      } catch(e) {}
+
+      currentFairyIndex = (currentFairyIndex + 1) % FAIRY_DIALOGUES.length;
+      updateFairyDisplay();
+
+      if (currentFairyIndex === FAIRY_DIALOGUES.length - 1) {
+        const btn = document.getElementById("btn-accept");
+        if (btn) btn.classList.add("ring-2", "ring-[#f59e0b]");
+      }
+    }
+
+    function updateFairyDisplay() {
+      const current = FAIRY_DIALOGUES[currentFairyIndex];
+      const textEl = document.getElementById("fairy-text");
+      const counterEl = document.getElementById("fairy-step-counter");
+
+      if (textEl) {
+        textEl.style.opacity = "0";
+        setTimeout(() => {
+          textEl.textContent = current.text;
+          textEl.style.opacity = "1";
+        }, 150);
+      }
+
+      if (counterEl) {
+        counterEl.textContent = `${currentFairyIndex + 1} / ${FAIRY_DIALOGUES.length}`;
+      }
+
+      moveFairyToPosition(current);
+    }
+
+        // Catálogo de 4 Marcas QR y 5to lugar final de sorpresa
+        // Catálogo de 4 Fotos a Objetos y 5to lugar de sorpresa
+        // Catálogo de 4 Fotos con validación inteligente por IA (Gemini Vision)
+        // Catálogo de 4 Fotos con validación inteligente generosa y flexible por IA
+    const QUEST_STEPS = [
+      {
+        step: 0,
+        roman: "OBJETO I DE IV",
+        title: "Pista I",
+        subtitle: "Caja de Chocolates Lindt",
+        riddle: "Oculto en la cocina, dentro de una tentación suiza de chocolate Lindt. Sacale una foto para continuar.",
+        aiCheck: "Determina si la imagen muestra chocolates, una caja, paquete, envoltorio, golosina o dulces Lindt (o cualquier dulce/chocolate). Sé MUY flexible y tolerante con ángulos, desenfoque o poca luz. Si hay duda razonable de que es chocolate o su paquete, apruébalo."
+      },
+      {
+        step: 1,
+        roman: "OBJETO II DE IV",
+        title: "Pista II",
+        subtitle: "Lámpara Velador de Papá",
+        riddle: "La luz que ilumina tus noches en el cuarto: la lámpara velador que te regaló tu papá. Capturá su foto.",
+        aiCheck: "Determina si la imagen muestra una lámpara, velador, foco, pantalla de luz o mesa de noche iluminada. Sé MUY flexible: si se ve una lámpara o luz de cuarto, apruébalo."
+      },
+      {
+        step: 2,
+        roman: "OBJETO III DE IV",
+        title: "Pista III",
+        subtitle: "El Gato Cabezón",
+        riddle: "El rey de cuatro patas y bigotes de la casa: encontrá a Cabezón y sacale una foto.",
+        aiCheck: "Determina si la imagen muestra un gato o felino (Cabezón), incluso si solo se ve una pata, la cola, la silueta o el lomo. Si hay presencia de un gato en la foto, apruébalo."
+      },
+      {
+        step: 3,
+        roman: "OBJETO IV DE IV",
+        title: "Pista IV",
+        subtitle: "Flor de Papel de Iván",
+        riddle: "Un recuerdo hecho a mano con cariño: la flor de papel que Iván te regaló. Sacale la última foto.",
+        aiCheck: "Determina si la imagen muestra una flor de papel, origami, manualidad en papel, flor o adorno artesanal hecho a mano. Sé MUY tolerante y apruébalo."
+      }
+    ];
+
+    const STORAGE_KEY = 'misterio_pirata_halloween_step';
+
+    let currentStepIndex = 0;
+    let html5QrCodeScanner = null;
+    let declineCount = 0;
+
+    const screenIntro = document.getElementById('screen-intro');
+    const screenClue = document.getElementById('screen-clue');
+    const screenScanner = document.getElementById('screen-scanner');
+    const screenVictory = document.getElementById('screen-victory');
+    const clueRomanIndicator = document.getElementById('clue-roman-indicator');
+    const clueTitle = document.getElementById('clue-title');
+    const clueRiddle = document.getElementById('clue-riddle');
+    const clueFeedback = document.getElementById('clue-feedback');
+    const parchmentCard = document.getElementById('parchment-card');
+    const btnDecline = null;
+
+    window.addEventListener('DOMContentLoaded', () => {
+      showScreen(screenIntro);
+
+
+      const btnClose = document.getElementById("btn-close-scanner");
+      if (btnClose) {
+        btnClose.addEventListener("click", (e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          closeScanner();
+        });
+        btnClose.addEventListener("touchstart", (e) => {
+          e.stopPropagation();
+          closeScanner();
+        }, { passive: false });
+      }
+      const flightZone = document.getElementById("fairy-flight-zone");
+      if (flightZone) {
+        flightZone.addEventListener("click", advanceFairyDialogue);
+        flightZone.addEventListener("touchstart", (e) => {
+          advanceFairyDialogue(e);
+        }, { passive: true });
+      }
+
+      const fairyEnt = document.getElementById("fairy-entity");
+      if (fairyEnt) {
+        fairyEnt.addEventListener("click", advanceFairyDialogue);
+      }
+
+      const bubbleEnt = document.getElementById("fairy-speech-bubble");
+      if (bubbleEnt) {
+        bubbleEnt.style.pointerEvents = "auto";
+        bubbleEnt.addEventListener("click", advanceFairyDialogue);
+        bubbleEnt.addEventListener("touchstart", (e) => {
+          advanceFairyDialogue(e);
+        }, { passive: true });
+      }
+      const btnAccept = document.getElementById("btn-accept");
+      if (btnAccept) {
+        btnAccept.addEventListener("click", (e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          startGame();
+        });
+        btnAccept.addEventListener("touchstart", (e) => {
+          e.stopPropagation();
+          startGame();
+        }, { passive: false });
+      }
+      setTimeout(() => { moveFairyToPosition(FAIRY_DIALOGUES[0]); }, 150);
+      AudioEngine.startAdventureMusic();
+
+      // Al primer toque de la pantalla por parte del usuario, arrancar la música de búsqueda del tesoro
+      const userGestureHandler = () => {
+        AudioEngine.init();
+        if (!AudioEngine.isMusicPlaying) {
+          AudioEngine.startAdventureMusic();
+        }
+        window.removeEventListener('click', userGestureHandler);
+        window.removeEventListener('touchstart', userGestureHandler);
+      };
+
+      window.addEventListener('click', userGestureHandler, { once: true });
+      window.addEventListener('touchstart', userGestureHandler, { once: true });
+    });
+
+    function handleDecline() {
+      AudioEngine.playTick();
+      triggerHaptic([30]);
+      declineCount++;
+
+      if (declineCount === 1) {
+        if (btnDecline) btnDecline.style.transform = 'translate(-25px, -5px) rotate(-3deg)';
+        if (btnDecline) btnDecline.innerText = "[ No te queda otra ]";
+      } else if (declineCount === 2) {
+        if (btnDecline) btnDecline.style.transform = 'translate(25px, 6px) rotate(3deg)';
+        if (btnDecline) btnDecline.innerText = "[ Acá no se recula ]";
+      } else {
+        if (btnDecline) btnDecline.style.transform = 'none';
+        if (btnDecline) btnDecline.innerText = "Acá no se recula. Tomá el mapa.";
+        if (btnDecline) btnDecline.classList.add('opacity-70', 'pointer-events-none');
+        document.getElementById('btn-accept').classList.add('ring-2', 'ring-[#a37c3f]');
+      }
+    }
+
+    function startGame() {
+      try {
+        AudioEngine.startAdventureMusic();
+      } catch(e) {}
+
+      try {
+        triggerHaptic([40]);
+      } catch(e) {}
+
+      const savedStep = localStorage.getItem(STORAGE_KEY);
+      if (savedStep !== null && parseInt(savedStep, 10) > 0) {
+        currentStepIndex = parseInt(savedStep, 10);
+      } else {
+        currentStepIndex = 0;
+        localStorage.setItem(STORAGE_KEY, "0");
+      }
+
+      if (currentStepIndex >= QUEST_STEPS.length) {
+        showScreen(screenVictory);
+      } else {
+        renderClue(currentStepIndex);
+        showScreen(screenClue);
+      }
+    }
+
+    function renderClue(index) {
+      const step = QUEST_STEPS[index];
+      clueRomanIndicator.textContent = step.roman;
+      clueTitle.textContent = step.title;
+      clueRiddle.textContent = `"${step.riddle}"`;
+      updateProgressDots(index);
+      clearFeedback();
+    }
+
+    function updateProgressDots(activeIndex) {
+      const dotsContainer = document.getElementById('progress-dots');
+      if (!dotsContainer) return;
+      dotsContainer.innerHTML = '';
+      for (let i = 0; i < QUEST_STEPS.length; i++) {
+        const dot = document.createElement('span');
+        if (i <= activeIndex) {
+          dot.className = "w-2.5 h-2.5 rounded-full bg-[#3b2713] border border-[#3b2713]";
+        } else {
+          dot.className = "w-2.5 h-2.5 rounded-full bg-[#a1885f]/40 border border-[#6b4e28]";
+        }
+        dotsContainer.appendChild(dot);
+      }
+    }
+
+    function showScreen(targetScreen) {
+      [screenIntro, screenClue, screenScanner, screenVictory].forEach(s => s.classList.add('screen-hidden'));
+      targetScreen.classList.remove('screen-hidden');
+    }
+
+            function triggerCameraCapture() {
+      try { triggerHaptic([30]); } catch(e) {}
+      const fileInput = document.getElementById("camera-file-input");
+      if (fileInput) {
+        fileInput.click();
+      }
+    }
+
+            const GEMINI_API_KEY = "AIzaSyA6gthzyVEjKWrOnjsydG5YFc_uceKeQlI";
+    let retryCount = 0;
+
+    async function validatePhotoWithAI(base64Image, stepIndex) {
+      // Regla de oro: si es el segundo o tercer intento, ser ultra permisivo para no trabar nunca el juego
+      if (retryCount >= 2) {
+        return { valido: true, motivo: "El hada intercede: ¡Objeto verificado con éxito!" };
+      }
+
+      const step = QUEST_STEPS[stepIndex];
+      const cleanBase64 = base64Image.replace(/^data:image\/[a-z]+;base64,/, "");
+
+      const prompt = `Actúa como un juez comprensivo y mágico para un juego de búsqueda del tesoro en casa.
+${step.aiCheck}
+Instrucciones estrictas:
+- NUNCA rechaces si el objeto está parcialmente visible, con luz tenue o tomado de cerca.
+- Solo rechaza si la foto es claramente de algo completamente ajeno (por ejemplo, una pared blanca vacía, una zapatilla, un piso sin nada).
+Responde exclusivamente en JSON con esta estructura:
+{"valido": true/false, "motivo": "frase corta y amable"}`;
+
+      const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+
+      const payload = {
+        contents: [{
+          parts: [
+            { text: prompt },
+            {
+              inline_data: {
+                mime_type: "image/jpeg",
+                data: cleanBase64
+              }
+            }
+          ]
+        }],
+        generationConfig: {
+          response_mime_type: "application/json",
+          temperature: 0.1
+        }
+      };
+
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 6500); // 6.5s timeout max
+
+        const response = await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+
+        if (!response.ok) {
+          console.warn("Fallo temporal de API, aprobando foto por seguridad.");
+          return { valido: true, motivo: "Objeto aceptado por el oráculo." };
+        }
+
+        const data = await response.json();
+        const jsonText = data.candidates[0].content.parts[0].text;
+        const result = JSON.parse(jsonText);
+        return result;
+      } catch (err) {
+        console.warn("Validación por fallback activada:", err);
+        return { valido: true, motivo: "Objeto verificado por los vientos marinos." };
+      }
+    }
+
+    async function handlePhotoCaptured(input) {
+      if (!input.files || input.files.length === 0) return;
+
+      const file = input.files[0];
+      const reader = new FileReader();
+
+      const btnText = document.getElementById("btn-photo-text");
+      const previewWrap = document.getElementById("photo-preview-wrap");
+      const previewImg = document.getElementById("photo-preview-img");
+
+      if (btnText) btnText.textContent = "[ Analizando con el oráculo... ]";
+
+      reader.onload = async function(e) {
+        const base64Data = e.target.result;
+
+        if (previewWrap && previewImg) {
+          previewImg.src = base64Data;
+          previewWrap.classList.remove("hidden");
+        }
+
+        // Llamada a la IA multimodal de Gemini
+        const result = await validatePhotoWithAI(base64Data, currentStepIndex);
+
+        if (result.valido) {
+          // ===============================
+          // FOTO CORRECTA RECONOCIDA POR IA
+          // ===============================
+          retryCount = 0;
+          if (btnText) btnText.textContent = "[ ¡Objeto Auténtico! ]";
+
+          try { AudioEngine.playSuccessCoin(); } catch(err) {}
+          try { triggerHaptic([70, 50, 70]); } catch(err) {}
+
+          parchmentCard.style.boxShadow = "0 0 40px rgba(217, 119, 6, 0.8), inset 0 0 35px rgba(217, 119, 6, 0.35)";
+          setTimeout(() => { parchmentCard.style.boxShadow = ""; }, 900);
+
+          setTimeout(() => {
+            if (previewWrap) previewWrap.classList.add("hidden");
+            if (btnText) btnText.textContent = "[ Sacar Foto del Objeto ]";
+            input.value = "";
+
+            currentStepIndex++;
+            localStorage.setItem(STORAGE_KEY, currentStepIndex.toString());
+
+            if (currentStepIndex >= QUEST_STEPS.length) {
+              showScreen(screenVictory);
+            } else {
+              renderClue(currentStepIndex);
+              showFeedback(result.motivo || "¡Objeto identificado! Avanzando al siguiente rastro.", "success");
+            }
+          }, 1200);
+
+        } else {
+          // ===============================
+          // FOTO INCORRECTA
+          // ===============================
+          retryCount++;
+          if (btnText) btnText.textContent = "[ Sacar Foto del Objeto ]";
+          input.value = "";
+
+          try { AudioEngine.playErrorThud(); } catch(err) {}
+          try { triggerHaptic([120]); } catch(err) {}
+
+          parchmentCard.classList.remove("shake-anim");
+          void parchmentCard.offsetWidth;
+          parchmentCard.classList.add("shake-anim");
+
+          const fallbackMsg = result.motivo || "Ese no parece ser el objeto de la pista. Leela bien y volvé a probar.";
+          showFeedback(fallbackMsg, "error");
+        }
+      };
+
+      reader.readAsDataURL(file);
+    }
+
+    function showFeedback(text, type) {
+      clueFeedback.textContent = text;
+      clueFeedback.style.opacity = '1';
+      if (type === 'error') {
+        clueFeedback.className = "text-center text-xs font-bold tracking-wider py-1.5 px-2 rounded transition-opacity duration-300 min-h-[28px] bg-[#612113]/20 text-[#6e1e12] border border-[#6e1e12]/30";
+      } else {
+        clueFeedback.className = "text-center text-xs font-bold tracking-wider py-1.5 px-2 rounded transition-opacity duration-300 min-h-[28px] bg-[#27461d]/20 text-[#213f17] border border-[#213f17]/30";
+      }
+      setTimeout(() => clearFeedback(), 3500);
+    }
+
+    function clearFeedback() {
+      clueFeedback.style.opacity = '0';
+    }
+
+
+
+    function toggleAdminHelper() {
+      AudioEngine.playTick();
+      const el = document.getElementById('admin-helper');
+      el.classList.toggle('hidden');
+    }
+
+    function generatePrintableQRs() {
+      AudioEngine.playTick();
+      const printWindow = window.open('', '_blank');
+      if (!printWindow) {
+        alert("Habilitá las ventanas emergentes para ver la lámina.");
+        return;
+      }
+
+      const qrs = [
+        { name: "QR 1 - Cocina", code: "CLAVE_LINDT_COCINA", place: "Pegar dentro de la caja de chocolates Lindt (mueble cocina)" },
+        { name: "QR 2 - Dormitorio", code: "CLAVE_MESITA_LUZ", place: "Pegar en el cajón de la mesita de luz izquierda (con los pañuelos)" },
+        { name: "QR 3 - Baño", code: "CLAVE_CANASTO_BANO", place: "Pegar debajo del canasto de la ropa del baño" },
+        { name: "QR 4 - Heladera", code: "CLAVE_HELADERA_CHOCOLATES", place: "Pegar dentro de la heladera, abajo de los chocolates" },
+      ];
+
+      const cardsHtml = qrs.map(q => `
+        <div style="border: 2px dashed #443; padding: 16px; width: 220px; text-align: center; font-family: 'Cinzel', Georgia, serif; background: #faf6ee;">
+          <div style="font-weight: bold; font-size: 13px; text-transform: uppercase; margin-bottom: 4px; color: #2a1f14;">${q.name}</div>
+          <div style="font-size: 10px; color: #665; margin-bottom: 10px; font-style: italic;">${q.place}</div>
+          <img style="width: 160px; height: 160px; margin: 0 auto; display: block;" 
+               src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(q.code)}&color=20-15-10" 
+               alt="${q.code}">
+          <div style="font-family: monospace; font-size: 11px; margin-top: 8px; font-weight: bold; color: #1c1308;">${q.code}</div>
+        </div>
+      `).join('');
+
+      printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Marcas para Imprimir</title>
+          <style>
+            body { font-family: Georgia, serif; padding: 20px; background: #fff; color: #111; }
+            .grid { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; }
+            @media print { .no-print { display: none; } }
+          </style>
+          <!-- AUDIO REAL ORQUESTAL PIRATAS DEL CARIBE -->
+  <audio id="bg-music" src="/piratas.mp3" loop preload="auto"></audio>
+</head>
+        <body>
+          <div class="no-print" style="text-align: center; margin-bottom: 15px;">
+            <button onclick="window.print()" style="padding: 8px 18px; font-size: 13px; font-weight: bold; cursor: pointer; background: #221a12; color: #dfcca6; border: none;">
+              [ Imprimir ]
+            </button>
+          </div>
+          <div class="grid">${cardsHtml}</div>
+        </body>
+        </html>
+      `);
+      printWindow.document.close();
+    }
+
+    function resetGame() {
+      AudioEngine.playTick();
+      triggerHaptic([50]);
+      localStorage.removeItem(STORAGE_KEY);
+      currentStepIndex = 0;
+      declineCount = 0;
+      if (btnDecline) btnDecline.style.transform = 'none';
+      if (btnDecline) btnDecline.innerText = "[ Pasar de largo ]";
+      if (btnDecline) btnDecline.classList.remove('opacity-70', 'pointer-events-none');
+      document.getElementById('btn-accept').classList.remove('ring-2', 'ring-[#a37c3f]');
+      showScreen(screenIntro);
+
+
+      const btnClose = document.getElementById("btn-close-scanner");
+      if (btnClose) {
+        btnClose.addEventListener("click", (e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          closeScanner();
+        });
+        btnClose.addEventListener("touchstart", (e) => {
+          e.stopPropagation();
+          closeScanner();
+        }, { passive: false });
+      }
+      const flightZone = document.getElementById("fairy-flight-zone");
+      if (flightZone) {
+        flightZone.addEventListener("click", advanceFairyDialogue);
+        flightZone.addEventListener("touchstart", (e) => {
+          advanceFairyDialogue(e);
+        }, { passive: true });
+      }
+
+      const fairyEnt = document.getElementById("fairy-entity");
+      if (fairyEnt) {
+        fairyEnt.addEventListener("click", advanceFairyDialogue);
+      }
+
+      const bubbleEnt = document.getElementById("fairy-speech-bubble");
+      if (bubbleEnt) {
+        bubbleEnt.style.pointerEvents = "auto";
+        bubbleEnt.addEventListener("click", advanceFairyDialogue);
+        bubbleEnt.addEventListener("touchstart", (e) => {
+          advanceFairyDialogue(e);
+        }, { passive: true });
+      }
+      const btnAccept = document.getElementById("btn-accept");
+      if (btnAccept) {
+        btnAccept.addEventListener("click", (e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          startGame();
+        });
+        btnAccept.addEventListener("touchstart", (e) => {
+          e.stopPropagation();
+          startGame();
+        }, { passive: false });
+      }
+      currentFairyIndex = 0; updateFairyDisplay();
+    }
+  </script>
+</body>
+</html>
