@@ -557,6 +557,14 @@
             </svg>
             <span id="btn-photo-text">[ Sacar foto ]</span>
           </button>
+
+          <!-- Botón de desarrollo para saltear pista y probar la app fluidamente -->
+          <button id="btn-skip-clue" type="button" onclick="skipCurrentClue()" class="w-full py-2 px-3 text-[11px] font-bold tracking-[0.2em] uppercase text-[#735129] hover:text-[#38230e] bg-[#cfb788]/30 hover:bg-[#cfb788]/60 border border-[#85633a]/40 rounded transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+            <svg class="w-3.5 h-3.5 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"/>
+            </svg>
+            <span>[ Saltear pista ]</span>
+          </button>
         </div>
       </div>
 
@@ -1283,7 +1291,21 @@ Responde exclusivamente en JSON con esta estructura:
       reader.readAsDataURL(file);
     }
 
-        function continueToNextClue() {
+        function skipCurrentClue() {
+      try { triggerHaptic([30]); } catch(e) {}
+      retryCount = 0;
+      currentStepIndex++;
+      localStorage.setItem(STORAGE_KEY, currentStepIndex.toString());
+
+      if (currentStepIndex >= QUEST_STEPS.length) {
+        showScreen(screenVictory);
+      } else {
+        renderClue(currentStepIndex);
+        showFeedback("Pista salteada.", "success");
+      }
+    }
+
+    function continueToNextClue() {
       try { triggerHaptic([40]); } catch(e) {}
       const successModal = document.getElementById("success-modal");
       if (successModal) {
