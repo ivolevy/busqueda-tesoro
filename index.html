@@ -119,7 +119,11 @@
                   transform 0.85s ease,
                   opacity 0.75s ease;
       cursor: pointer;
-      filter: drop-shadow(0 0 16px rgba(251, 191, 36, 0.55));
+      background: transparent;
+      outline: none;
+      border: none;
+      box-shadow: none;
+      -webkit-tap-highlight-color: transparent;
     }
 
     @keyframes wingHoverL {
@@ -436,13 +440,12 @@
         <div id="fairy-flight-zone" style="touch-action: manipulation;" class="my-auto relative h-[380px] w-full cursor-pointer select-none overflow-visible">
           
           <!-- HADA MÍSTICA PREMIUM ILUSTRADA -->
-          <div id="fairy-entity" class="transition-all duration-700 ease-out" title="Tocá para continuar">
-            <div class="fairy-inner-bob relative w-full h-full flex items-center justify-center">
-              <!-- Aura celestial brillante -->
-              <div class="fairy-aura absolute -inset-3 bg-amber-300/35 rounded-full blur-lg pointer-events-none"></div>
-              <div class="absolute -inset-1 bg-yellow-200/50 rounded-full blur-sm pointer-events-none"></div>
+          <div id="fairy-entity" class="transition-all duration-700 ease-out select-none outline-none" title="Tocá para continuar">
+            <div class="fairy-inner-bob relative w-full h-full flex items-center justify-center pointer-events-none">
+              <!-- Aura celestial brillante circular difusa y limpia -->
+              <div class="fairy-aura absolute inset-1 bg-amber-400/25 rounded-full blur-md pointer-events-none"></div>
 
-              <svg class="w-full h-full relative" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg class="w-full h-full relative overflow-visible filter drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <!-- Alas traseras superiores e inferiores con transparencias de hada y vetas de cristal -->
                 <g class="wing-premium-l">
                   <!-- Ala superior izquierda -->
