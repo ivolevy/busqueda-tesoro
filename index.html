@@ -627,31 +627,32 @@
         // ==========================================
     // SISTEMA ESTABLE Y FLUIDO DE DIÁLOGOS DEL HADA
     // ==========================================
+    // Coordenadas fijas y seguras (en % o px calculados en base al contenedor)
     const FAIRY_DIALOGUES = [
       {
         text: "\"¡Hola! Iván te preparó una sorpresa, pero no te la va a hacer tan fácil...\"",
-        fairy: { x: 30, y: 20, tilt: 6, flip: 1 },
-        bubble: { x: 110, y: 15, tail: "tail-top", tailOffset: "20px" }
+        fairy: { xPct: 0.12, y: 25, tilt: 6, flip: 1 },
+        bubble: { xPct: 0.40, y: 20, tail: "tail-top", tailOffset: "25px" }
       },
       {
         text: "\"Vas a tener que encontrar 4 objetos especiales por la casa y sacarles una foto.\"",
-        fairy: { x: 220, y: 35, tilt: -8, flip: -1 },
-        bubble: { x: 15, y: 25, tail: "tail-top", tailOffset: "160px" }
+        fairy: { xPct: 0.75, y: 35, tilt: -8, flip: -1 },
+        bubble: { xPct: 0.05, y: 30, tail: "tail-top", tailOffset: "165px" }
       },
       {
         text: "\"Leé cada pista, capturá la foto del objeto y avanzá al siguiente destino.\"",
-        fairy: { x: 210, y: 190, tilt: 6, flip: -1 },
-        bubble: { x: 15, y: 100, tail: "tail-bottom", tailOffset: "160px" }
+        fairy: { xPct: 0.74, y: 200, tilt: 6, flip: -1 },
+        bubble: { xPct: 0.05, y: 95, tail: "tail-bottom", tailOffset: "165px" }
       },
       {
         text: "\"Al completar las 4 fotos, se revela el 5to lugar donde está la sorpresa real.\"",
-        fairy: { x: 30, y: 180, tilt: -5, flip: 1 },
-        bubble: { x: 110, y: 105, tail: "tail-bottom", tailOffset: "20px" }
+        fairy: { xPct: 0.12, y: 195, tilt: -5, flip: 1 },
+        bubble: { xPct: 0.40, y: 100, tail: "tail-bottom", tailOffset: "25px" }
       }
     ];
 
     let currentFairyIndex = 0;
-    let lastFairyPos = { x: 30, y: 20 };
+    let lastFairyPos = { x: 40, y: 30 };
     let isAdvancingFairy = false;
 
     function moveFairyToPosition(data) {
@@ -661,23 +662,26 @@
       const zone = document.getElementById("fairy-flight-zone");
       if (!fairy || !zone || !bubble) return;
 
-      const zoneWidth = zone.clientWidth || 300;
+      const zoneWidth = zone.clientWidth || 320;
       
-      const finalFairyX = Math.min(data.fairy.x, Math.max(zoneWidth - 85, 10));
-      const finalFairyY = data.fairy.y;
+      // Cálculo preciso de posiciones según ancho real de la pantalla
+      const maxFairyX = Math.max(zoneWidth - 90, 10);
+      const fairyTargetX = Math.max(10, Math.min(Math.round(zoneWidth * data.fairy.xPct), maxFairyX));
+      const fairyTargetY = data.fairy.y;
 
-      const finalBubbleX = Math.min(data.bubble.x, Math.max(zoneWidth - 225, 10));
-      const finalBubbleY = data.bubble.y;
+      const maxBubbleX = Math.max(zoneWidth - 215, 10);
+      const bubbleTargetX = Math.max(10, Math.min(Math.round(zoneWidth * data.bubble.xPct), maxBubbleX));
+      const bubbleTargetY = data.bubble.y;
 
-      emitMagicTrail(lastFairyPos.x + 40, lastFairyPos.y + 40, finalFairyX + 40, finalFairyY + 40, zone);
-      lastFairyPos = { x: finalFairyX, y: finalFairyY };
+      emitMagicTrail(lastFairyPos.x + 40, lastFairyPos.y + 40, fairyTargetX + 40, fairyTargetY + 40, zone);
+      lastFairyPos = { x: fairyTargetX, y: fairyTargetY };
 
-      fairy.style.left = finalFairyX + "px";
-      fairy.style.top = finalFairyY + "px";
+      fairy.style.left = fairyTargetX + "px";
+      fairy.style.top = fairyTargetY + "px";
       fairy.style.transform = `scaleX(${data.fairy.flip}) rotate(${data.fairy.tilt}deg)`;
 
-      bubble.style.left = finalBubbleX + "px";
-      bubble.style.top = finalBubbleY + "px";
+      bubble.style.left = bubbleTargetX + "px";
+      bubble.style.top = bubbleTargetY + "px";
 
       if (tail) {
         tail.className = "bubble-tail " + data.bubble.tail;
@@ -686,14 +690,14 @@
     }
 
     function advanceFairyDialogue(event) {
-      if (event) {
+      if (event && event.stopPropagation) {
         event.stopPropagation();
       }
 
-      // Evitar doble salto por eventos click + touch simultáneos
+      // Evitar saltos fantasma o dobles toques instantáneos
       if (isAdvancingFairy) return;
       isAdvancingFairy = true;
-      setTimeout(() => { isAdvancingFairy = false; }, 320);
+      setTimeout(() => { isAdvancingFairy = false; }, 280);
 
       try { AudioEngine.startAdventureMusic(); } catch(e) {}
       try { triggerHaptic([35]); } catch(e) {}
@@ -801,6 +805,8 @@
           if (e.target && e.target.closest("#btn-accept")) return;
           advanceFairyDialogue(e);
         };
+        // Soporte robusto multidispositivo (click, touchend y pointerdown)
+        flightZone.addEventListener("click", handleDialogueTap);
         flightZone.addEventListener("pointerdown", handleDialogueTap);
       }
             const btnReset = document.getElementById("btn-reset-game");
@@ -1178,18 +1184,6 @@ Responde exclusivamente en JSON con esta estructura:
       if (successModal) successModal.classList.add("hidden");
 
       // Resetear botón de avanzar
-            const btnReset = document.getElementById("btn-reset-game");
-      if (btnReset) {
-        btnReset.addEventListener("click", (e) => {
-          e.stopPropagation();
-          e.preventDefault();
-          resetGame();
-        });
-        btnReset.addEventListener("touchstart", (e) => {
-          e.stopPropagation();
-          resetGame();
-        }, { passive: false });
-      }
       const btnAccept = document.getElementById("btn-accept");
       if (btnAccept) {
         btnAccept.classList.remove("ring-2", "ring-[#a37c3f]", "ring-[#f59e0b]");
