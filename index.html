@@ -262,8 +262,59 @@
       0%, 100% { box-shadow: 0 4px 12px rgba(0,0,0,0.5), 0 0 0 rgba(163, 124, 63, 0); }
       50% { box-shadow: 0 4px 14px rgba(0,0,0,0.6), 0 0 10px rgba(163, 124, 63, 0.35); }
     }
-    .pulse-action {
-      animation: pulseGlow 2.8s infinite ease-in-out;
+    /* Animación de apertura de cofre del tesoro */
+    @keyframes chestLidOpen {
+      0% {
+        transform: rotateX(0deg);
+      }
+      50% {
+        transform: rotateX(-75deg);
+      }
+      100% {
+        transform: rotateX(-115deg);
+      }
+    }
+    @keyframes chestGoldGlow {
+      0% {
+        opacity: 0;
+        transform: scale(0.6) translateY(20px);
+      }
+      50% {
+        opacity: 1;
+        transform: scale(1.3) translateY(-10px);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1.6) translateY(-25px);
+      }
+    }
+    @keyframes chestBurst {
+      0% {
+        transform: scale(0.85);
+        opacity: 0;
+      }
+      20% {
+        transform: scale(1.05);
+        opacity: 1;
+      }
+      80% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(1.2);
+        opacity: 0;
+      }
+    }
+    .chest-modal-anim {
+      animation: chestBurst 1.35s cubic-bezier(0.2, 0.8, 0.3, 1) forwards;
+    }
+    .chest-lid-animated {
+      transform-origin: 50px 38px;
+      animation: chestLidOpen 0.9s cubic-bezier(0.34, 1.3, 0.64, 1) 0.15s forwards;
+    }
+    .chest-glow-animated {
+      animation: chestGoldGlow 1.1s ease-out 0.25s forwards;
     }
   </style>
   <!-- AUDIO REAL ORQUESTAL PIRATAS DEL CARIBE -->
@@ -274,6 +325,73 @@
 
 
   
+    <!-- Overlay de Animación del Cofre que se Abre -->
+    <div id="chest-opening-overlay" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md hidden transition-opacity duration-300">
+      <div class="relative flex flex-col items-center justify-center text-center">
+        <!-- Luz dorada mística emanando del interior del cofre -->
+        <div class="absolute w-72 h-72 rounded-full bg-amber-400/30 blur-3xl pointer-events-none chest-glow-animated"></div>
+
+        <!-- Ilustración SVG del Cofre del Tesoro con Tapa Móvil y Luz Brillante -->
+        <div class="relative w-52 h-52 sm:w-60 sm:h-60 chest-modal-anim">
+          <svg class="w-full h-full drop-shadow-[0_0_35px_rgba(245,158,11,0.6)]" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style="perspective: 600px;">
+            <defs>
+              <linearGradient id="chestWoodGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#5c3818"/>
+                <stop offset="50%" stop-color="#3d230d"/>
+                <stop offset="100%" stop-color="#261405"/>
+              </linearGradient>
+              <linearGradient id="chestGoldGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#fef08a"/>
+                <stop offset="50%" stop-color="#d97706"/>
+                <stop offset="100%" stop-color="#92400e"/>
+              </linearGradient>
+              <linearGradient id="innerGlowGrad" x1="0" y1="1" x2="0" y2="0">
+                <stop offset="0%" stop-color="#fef08a"/>
+                <stop offset="60%" stop-color="#f59e0b" stop-opacity="0.8"/>
+                <stop offset="100%" stop-color="#fbbf24" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+
+            <!-- Fondo interior oscuro del cofre -->
+            <rect x="22" y="42" width="56" height="36" rx="2" fill="#180e06" stroke="#0a0502" stroke-width="1.5"/>
+
+            <!-- Luz y joyas que brillan dentro al abrir -->
+            <ellipse cx="50" cy="52" rx="22" ry="14" fill="url(#innerGlowGrad)" class="chest-glow-animated opacity-0"/>
+            <circle cx="44" cy="50" r="3" fill="#fef08a" class="chest-glow-animated opacity-0"/>
+            <circle cx="56" cy="48" r="2.5" fill="#fde047" class="chest-glow-animated opacity-0"/>
+            <circle cx="50" cy="54" r="3.5" fill="#ffffff" class="chest-glow-animated opacity-0"/>
+
+            <!-- Base del cofre (Cuerpo frontal) -->
+            <path d="M20 44 L22 80 C22 82, 24 84, 26 84 L74 84 C76 84, 78 82, 78 80 L80 44 Z" fill="url(#chestWoodGrad)" stroke="#1a0d04" stroke-width="2"/>
+
+            <!-- Herrajes de hierro y oro en la base -->
+            <path d="M20 44 L22 80 L28 80 L27 44 Z" fill="url(#chestGoldGrad)" stroke="#78350f" stroke-width="0.8"/>
+            <path d="M73 44 L72 80 L78 80 L80 44 Z" fill="url(#chestGoldGrad)" stroke="#78350f" stroke-width="0.8"/>
+            <rect x="46" y="44" width="8" height="20" fill="url(#chestGoldGrad)" stroke="#78350f" stroke-width="0.8"/>
+            <!-- Ojo de la cerradura -->
+            <circle cx="50" cy="53" r="2" fill="#180e06"/>
+            <polygon points="49,53 51,53 51.5,58 48.5,58" fill="#180e06"/>
+
+            <!-- TAPA DEL COFRE (ANIMADA CON PERSPECTIVA QUE SE LEVANTA) -->
+            <g class="chest-lid-animated">
+              <!-- Cúpula de madera de la tapa -->
+              <path d="M18 42 C18 26, 32 18, 50 18 C68 18, 82 26, 82 42 Z" fill="url(#chestWoodGrad)" stroke="#1a0d04" stroke-width="2"/>
+              <!-- Bandas doradas reforzadas en la tapa -->
+              <path d="M19 42 C20 28, 28 22, 33 20 L30 42 Z" fill="url(#chestGoldGrad)" stroke="#78350f" stroke-width="0.8"/>
+              <path d="M81 42 C80 28, 72 22, 67 20 L70 42 Z" fill="url(#chestGoldGrad)" stroke="#78350f" stroke-width="0.8"/>
+              <path d="M46 18 L54 18 L54 42 L46 42 Z" fill="url(#chestGoldGrad)" stroke="#78350f" stroke-width="0.8"/>
+              <!-- Cerradura superior / cerrojo -->
+              <rect x="47" y="38" width="6" height="8" rx="1" fill="#fef08a" stroke="#92400e" stroke-width="0.8"/>
+            </g>
+          </svg>
+        </div>
+
+        <p class="font-cinzel text-amber-200 tracking-[0.25em] text-sm uppercase mt-4 font-bold animate-pulse">
+          Abriendo el cofre...
+        </p>
+      </div>
+    </div>
+
     <!-- Modal Estético de Éxito / Objeto Revelado -->
     <div id="success-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md hidden transition-opacity duration-300">
       <!-- Resplandor dorado de fondo -->
@@ -842,7 +960,7 @@
         roman: "OBJETO I DE IV",
         title: "Pista I",
         subtitle: "Tesoros de Ultramar",
-        riddle: "En la cocina, al abrigo de puertas de madera, descansa una dulce tentación nacida en tierras suizas. Capturá lo que endulza las sombras.",
+        riddle: "En la cocina, guardada en un mueble, hay una cajita dulce de Suiza que tanto te gusta comer. Sacale una foto a los chocolates.",
         aiCheck: "Determina si la imagen muestra chocolates, una caja, paquete, envoltorio, bombón, golosina o dulces Lindt (o cualquier chocolate/caja de bombones). Sé MUY flexible y tolerante con ángulos, desenfoque o poca luz. Si hay duda razonable de que es chocolate o su paquete, apruébalo."
       },
       {
@@ -850,7 +968,7 @@
         roman: "OBJETO II DE IV",
         title: "Pista II",
         subtitle: "El Faro Nocturno",
-        riddle: "Custodia tus sueños y vence a las sombras junto a tu lecho: el guardián de luz que te obsequió tu padre. Sacale una foto a su vigilia.",
+        riddle: "Al lado de tu cama está la lámpara que te regaló tu papá para iluminar tus noches. Sacale una foto a su luz.",
         aiCheck: "Determina si la imagen muestra una lámpara, velador, foco, pantalla de luz o mesa de noche iluminada. Sé MUY flexible: si se ve una lámpara o luz de cuarto, apruébalo."
       },
       {
@@ -858,7 +976,7 @@
         roman: "OBJETO III DE IV",
         title: "Pista III",
         subtitle: "El Guardián Silencioso",
-        riddle: "Un alma de bigotes y pasos silenciosos que gobierna la casa con ojos atentos y porte de rey. Encontralo y capturá su retrato.",
+        riddle: "Tiene cuatro patas, bigotes y camina sigiloso por toda la casa mirando todo. Buscá a Cabezón y sacale una foto.",
         aiCheck: "Determina si la imagen muestra un gato o felino (Cabezón), incluso si solo se ve una pata, la cola, la silueta o el lomo. Si hay presencia de un gato en la foto, apruébalo."
       },
       {
@@ -866,7 +984,7 @@
         roman: "OBJETO IV DE IV",
         title: "Pista IV",
         subtitle: "La Creación de Papel",
-        riddle: "Un brote inmarchitable que no nació de la tierra, sino de pliegues pacientes y cariño sincero moldeado por las manos de Iván.",
+        riddle: "No necesita agua ni tierra: es la flor de papel que Iván dobló y armó con sus propias manos para vos. Sacale una foto.",
         aiCheck: "Determina si la imagen muestra una flor de papel, origami, manualidad en papel, flor o adorno artesanal hecho a mano. Sé MUY tolerante y apruébalo."
       }
     ];
@@ -983,20 +1101,37 @@
         triggerHaptic([40]);
       } catch(e) {}
 
-      const savedStep = localStorage.getItem(STORAGE_KEY);
-      if (savedStep !== null && parseInt(savedStep, 10) > 0) {
-        currentStepIndex = parseInt(savedStep, 10);
-      } else {
-        currentStepIndex = 0;
-        localStorage.setItem(STORAGE_KEY, "0");
+      // Mostrar animación del cofre abriéndose antes de ingresar a las pistas
+      const chestOverlay = document.getElementById("chest-opening-overlay");
+      if (chestOverlay) {
+        chestOverlay.classList.remove("hidden");
+        chestOverlay.style.opacity = "1";
       }
 
-      if (currentStepIndex >= QUEST_STEPS.length) {
-        showScreen(screenVictory);
-      } else {
-        renderClue(currentStepIndex);
-        showScreen(screenClue);
-      }
+      setTimeout(() => {
+        const savedStep = localStorage.getItem(STORAGE_KEY);
+        if (savedStep !== null && parseInt(savedStep, 10) > 0) {
+          currentStepIndex = parseInt(savedStep, 10);
+        } else {
+          currentStepIndex = 0;
+          localStorage.setItem(STORAGE_KEY, "0");
+        }
+
+        if (currentStepIndex >= QUEST_STEPS.length) {
+          showScreen(screenVictory);
+        } else {
+          renderClue(currentStepIndex);
+          showScreen(screenClue);
+        }
+
+        // Ocultar suavemente el overlay del cofre
+        if (chestOverlay) {
+          chestOverlay.style.opacity = "0";
+          setTimeout(() => {
+            chestOverlay.classList.add("hidden");
+          }, 350);
+        }
+      }, 1250);
     }
 
     function renderClue(index) {
