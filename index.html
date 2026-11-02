@@ -555,8 +555,8 @@
         </div>
 
         <div class="pb-1">
-          <button onclick="resetGame()" class="btn-rustic w-full py-3.5 px-4 font-bold text-xs tracking-widest uppercase">
-            [ Reiniciar travesía ]
+          <button id="btn-reset-game" type="button" onclick="event.stopPropagation(); resetGame()" class="btn-rustic w-full py-4 px-4 font-bold text-sm tracking-widest uppercase cursor-pointer relative z-50">
+            <span>[ Reiniciar travesía ]</span>
           </button>
         </div>
       </div>
@@ -802,6 +802,18 @@
           advanceFairyDialogue(e);
         };
         flightZone.addEventListener("pointerdown", handleDialogueTap);
+      }
+            const btnReset = document.getElementById("btn-reset-game");
+      if (btnReset) {
+        btnReset.addEventListener("click", (e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          resetGame();
+        });
+        btnReset.addEventListener("touchstart", (e) => {
+          e.stopPropagation();
+          resetGame();
+        }, { passive: false });
       }
       const btnAccept = document.getElementById("btn-accept");
       if (btnAccept) {
@@ -1154,52 +1166,40 @@ Responde exclusivamente en JSON con esta estructura:
       printWindow.document.close();
     }
 
-    function resetGame() {
-      AudioEngine.playTick();
-      triggerHaptic([50]);
+        function resetGame() {
+      try { triggerHaptic([50]); } catch(e) {}
       localStorage.removeItem(STORAGE_KEY);
       currentStepIndex = 0;
-      declineCount = 0;
-      if (btnDecline) btnDecline.style.transform = 'none';
-      if (btnDecline) btnDecline.innerText = "[ Pasar de largo ]";
-      if (btnDecline) btnDecline.classList.remove('opacity-70', 'pointer-events-none');
-      document.getElementById('btn-accept').classList.remove('ring-2', 'ring-[#a37c3f]');
-      showScreen(screenIntro);
+      currentFairyIndex = 0;
+      retryCount = 0;
 
+      // Ocultar modal de éxito si hubiera quedado abierto
+      const successModal = document.getElementById("success-modal");
+      if (successModal) successModal.classList.add("hidden");
 
-      const btnClose = document.getElementById("btn-close-scanner");
-      if (btnClose) {
-        btnClose.addEventListener("click", (e) => {
+      // Resetear botón de avanzar
+            const btnReset = document.getElementById("btn-reset-game");
+      if (btnReset) {
+        btnReset.addEventListener("click", (e) => {
           e.stopPropagation();
           e.preventDefault();
-          closeScanner();
+          resetGame();
         });
-        btnClose.addEventListener("touchstart", (e) => {
+        btnReset.addEventListener("touchstart", (e) => {
           e.stopPropagation();
-          closeScanner();
+          resetGame();
         }, { passive: false });
-      }
-      const flightZone = document.getElementById("fairy-flight-zone");
-      if (flightZone) {
-        const handleDialogueTap = (e) => {
-          if (e.target && e.target.closest("#btn-accept")) return;
-          advanceFairyDialogue(e);
-        };
-        flightZone.addEventListener("pointerdown", handleDialogueTap);
       }
       const btnAccept = document.getElementById("btn-accept");
       if (btnAccept) {
-        btnAccept.addEventListener("click", (e) => {
-          e.stopPropagation();
-          e.preventDefault();
-          startGame();
-        });
-        btnAccept.addEventListener("touchstart", (e) => {
-          e.stopPropagation();
-          startGame();
-        }, { passive: false });
+        btnAccept.classList.remove("ring-2", "ring-[#a37c3f]", "ring-[#f59e0b]");
       }
-      currentFairyIndex = 0; updateFairyDisplay();
+
+      // Reiniciar diálogo del hada a la posición inicial
+      updateFairyDisplay();
+
+      // Mostrar pantalla inicial
+      showScreen(screenIntro);
     }
   </script>
 </body>
