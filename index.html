@@ -132,13 +132,17 @@
       animation: wingHoverR 0.16s ease-in-out infinite;
     }
 
-    /* Halo pulsante místico */
-    @keyframes auraPulse {
-      0%, 100% { transform: scale(1); opacity: 0.45; }
-      50% { transform: scale(1.25); opacity: 0.85; }
+    /* Hover y aleteo continuo del cuerpo del hada */
+    @keyframes fairyBobbing {
+      0%, 100% {
+        transform: translateY(0px) rotate(0deg);
+      }
+      50% {
+        transform: translateY(-8px) rotate(1deg);
+      }
     }
-    .fairy-aura {
-      animation: auraPulse 1.8s ease-in-out infinite;
+    .fairy-inner-bob {
+      animation: fairyBobbing 2.2s ease-in-out infinite;
     }
 
     /* =========================================
@@ -343,7 +347,7 @@
           
           <!-- HADA MÍSTICA PREMIUM ILUSTRADA -->
           <div id="fairy-entity" class="transition-all duration-700 ease-out" title="Tocá para continuar">
-            <div class="relative w-full h-full flex items-center justify-center">
+            <div class="fairy-inner-bob relative w-full h-full flex items-center justify-center">
               <!-- Aura celestial brillante -->
               <div class="fairy-aura absolute -inset-3 bg-amber-300/35 rounded-full blur-lg pointer-events-none"></div>
               <div class="absolute -inset-1 bg-yellow-200/50 rounded-full blur-sm pointer-events-none"></div>
@@ -654,6 +658,43 @@
     let currentFairyIndex = 0;
     let lastFairyPos = { x: 40, y: 30 };
     let isAdvancingFairy = false;
+
+    function emitMagicTrail(startX, startY, endX, endY, container) {
+      if (!container) return;
+      const particleCount = 20;
+      const duration = 750;
+
+      for (let i = 0; i < particleCount; i++) {
+        setTimeout(() => {
+          const progress = i / particleCount;
+          const currX = startX + (endX - startX) * progress + (Math.sin(progress * Math.PI) * 18);
+          const currY = startY + (endY - startY) * progress - (Math.sin(progress * Math.PI) * 14);
+
+          const p = document.createElement("div");
+          p.className = "magic-particle";
+
+          const size = Math.random() * 6 + 3;
+          p.style.width = size + "px";
+          p.style.height = size + "px";
+          p.style.left = (currX + (Math.random() * 16 - 8)) + "px";
+          p.style.top = (currY + (Math.random() * 16 - 8)) + "px";
+
+          const colors = ["#ffffff", "#fef08a", "#fde047", "#f59e0b", "#fbbf24"];
+          p.style.background = colors[Math.floor(Math.random() * colors.length)];
+
+          const dx = (Math.random() * 30 - 15) + "px";
+          const dy = (Math.random() * 25 + 10) + "px";
+          p.style.setProperty("--dx", dx);
+          p.style.setProperty("--dy", dy);
+
+          container.appendChild(p);
+          setTimeout(() => {
+            if (p && p.remove) p.remove();
+            else if (p && p.parentNode) p.parentNode.removeChild(p);
+          }, 950);
+        }, (i * (duration / particleCount)));
+      }
+    }
 
     function moveFairyToPosition(data) {
       const fairy = document.getElementById("fairy-entity");
