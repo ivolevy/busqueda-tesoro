@@ -258,73 +258,78 @@
       display: none !important;
     }
 
-    /* Efecto inmersivo de sumergirse / zoom cinematográfico al avanzar */
+    /* Efecto inmersivo de pergamino y mapa pirata al avanzar */
     .screen-dive-out {
-      animation: diveOutAnim 0.65s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+      animation: mapFoldAndDiveOut 0.75s cubic-bezier(0.4, 0, 0.2, 1) forwards;
       pointer-events: none;
     }
     .screen-dive-in {
-      animation: diveInAnim 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation: mapUnfoldAndDiveIn 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
-    @keyframes diveOutAnim {
+    @keyframes mapFoldAndDiveOut {
       0% {
         opacity: 1;
-        transform: scale(1) translateY(0);
-        filter: blur(0px);
+        transform: scale(1) translateY(0) rotate(0deg);
+        filter: blur(0px) brightness(1);
       }
-      40% {
-        opacity: 0.85;
-        transform: scale(1.04) translateY(-10px);
-        filter: blur(1px);
+      35% {
+        opacity: 0.9;
+        transform: scale(1.05) translateY(-8px) rotate(-0.5deg);
+        filter: brightness(1.2) drop-shadow(0 0 20px rgba(245, 158, 11, 0.4));
       }
       100% {
         opacity: 0;
-        transform: scale(1.15) translateY(-30px);
-        filter: blur(8px);
+        transform: scale(1.3) translateY(-40px) rotate(-1.5deg);
+        filter: blur(12px) brightness(1.6);
       }
     }
-    @keyframes diveInAnim {
+    @keyframes mapUnfoldAndDiveIn {
       0% {
         opacity: 0;
-        transform: scale(0.88) translateY(35px);
-        filter: blur(6px);
+        transform: scale(0.8) translateY(45px) rotate(1deg);
+        filter: blur(10px) brightness(1.4);
       }
-      60% {
+      50% {
         opacity: 0.95;
-        filter: blur(1px);
+        transform: scale(1.02) translateY(-4px) rotate(-0.2deg);
+        filter: blur(1px) brightness(1.1);
       }
       100% {
         opacity: 1;
-        transform: scale(1) translateY(0);
-        filter: blur(0px);
+        transform: scale(1) translateY(0) rotate(0deg);
+        filter: blur(0px) brightness(1);
       }
     }
 
-    /* ONDA DE CHOQUE / RESPLANDOR DE AGUA O LUZ AL SUMERGIRSE */
+    /* ONDA DE LUZ Y PARTÍCULAS EXPANSIVAS MÍSTICAS */
     #dive-ripple-overlay {
       position: fixed;
       inset: 0;
       pointer-events: none;
       z-index: 60;
       opacity: 0;
-      background: radial-gradient(circle at center, rgba(217, 119, 6, 0.45) 0%, rgba(20, 10, 4, 0.85) 65%, rgba(6, 4, 2, 0.98) 100%);
+      background: radial-gradient(circle at center, rgba(251, 191, 36, 0.6) 0%, rgba(180, 83, 9, 0.7) 40%, rgba(15, 8, 3, 0.95) 85%);
+      mix-blend-mode: screen;
       transition: opacity 0.3s ease;
     }
     .ripple-active {
-      animation: rippleDivePulse 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      animation: rippleDivePulse 0.8s cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
     }
     @keyframes rippleDivePulse {
       0% {
         opacity: 0;
-        transform: scale(0.7);
+        transform: scale(0.4);
+        filter: blur(4px);
       }
-      35% {
+      40% {
         opacity: 1;
-        transform: scale(1);
+        transform: scale(1.1);
+        filter: blur(0px);
       }
       100% {
         opacity: 0;
-        transform: scale(1.35);
+        transform: scale(1.6);
+        filter: blur(8px);
       }
     }
   </style>
@@ -1051,6 +1056,12 @@
       const introScreen = document.getElementById("screen-intro");
       const clueScreen = document.getElementById("screen-clue");
       const rippleOverlay = document.getElementById("dive-ripple-overlay");
+      const parchmentCard = document.getElementById("parchment-card");
+
+      // Destello dorado de luz mística en el pergamino
+      if (parchmentCard) {
+        parchmentCard.style.boxShadow = "0 0 50px rgba(245, 158, 11, 0.9), inset 0 0 40px rgba(217, 119, 6, 0.5)";
+      }
 
       // Disparar destello/onda inmersiva
       if (rippleOverlay) {
@@ -1083,15 +1094,16 @@
         } else {
           renderClue(currentStepIndex);
           showScreen(screenClue);
-          // Efecto de emerger en la nueva pestaña
+          // Efecto de emerger en la nueva pestaña con despliegue de mapa
           if (clueScreen) {
             clueScreen.classList.add("screen-dive-in");
             setTimeout(() => {
               clueScreen.classList.remove("screen-dive-in");
-            }, 650);
+              if (parchmentCard) parchmentCard.style.boxShadow = "";
+            }, 750);
           }
         }
-      }, 350);
+      }, 420);
     }
 
     function startGame() {
