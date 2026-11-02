@@ -1345,7 +1345,7 @@
     function toggleAdminHelper() {
       AudioEngine.playTick();
       const el = document.getElementById('admin-helper');
-      el.classList.toggle('hidden');
+      if (el) el.classList.toggle('hidden');
     }
 
     function generatePrintableQRs() {
