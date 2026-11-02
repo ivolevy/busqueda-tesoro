@@ -353,7 +353,7 @@
     }
   </style>
   <!-- AUDIO REAL ORQUESTAL PIRATAS DEL CARIBE -->
-  <audio id="bg-music" src="/piratas.mp3" loop preload="auto"></audio>
+  <audio id="bg-music" src="/piratas.mp3" loop autoplay playsinline preload="auto"></audio>
 </head>
 <body class="h-full w-full flex flex-col items-center justify-center p-3 sm:p-5 overflow-hidden relative">
 
@@ -699,7 +699,7 @@
               promise.then(() => {
                 this.isMusicPlaying = true;
               }).catch(error => {
-                console.log("Audio esperando gesto:", error);
+                // Si el navegador bloqueó el autoplay sin interacción, se intentará de nuevo al primer gesto
               });
             }
           }
@@ -712,22 +712,32 @@
       playFairyChime() {}
     };
 
-    window.addEventListener("DOMContentLoaded", () => {
+    // Intentar reproducción inmediata desde el segundo cero
+    AudioEngine.startAdventureMusic();
+    document.addEventListener("DOMContentLoaded", () => {
+      AudioEngine.startAdventureMusic();
+    });
+    window.addEventListener("load", () => {
       AudioEngine.startAdventureMusic();
     });
 
-    // Como iOS Safari y Android Chrome bloquean audio no solicitado hasta el 1er toque,
-    // activamos la música con CUALQUIER toque a la pantalla (incluso el primer scroll o tap)
-    const unlockAudio = () => {
-      AudioEngine.startAdventureMusic();
-      window.removeEventListener("touchstart", unlockAudio);
-      window.removeEventListener("click", unlockAudio);
-      window.removeEventListener("pointerdown", unlockAudio);
+    // Desbloquear audio con CUALQUIER toque, scroll, touchstart o movimiento en el documento entero
+    const tryUnlockAudio = () => {
+      if (!AudioEngine.isMusicPlaying) {
+        AudioEngine.startAdventureMusic();
+      }
+      if (AudioEngine.isMusicPlaying) {
+        ['touchstart', 'touchend', 'click', 'pointerdown', 'scroll'].forEach(evt => {
+          document.removeEventListener(evt, tryUnlockAudio, true);
+          window.removeEventListener(evt, tryUnlockAudio, true);
+        });
+      }
     };
 
-    window.addEventListener("touchstart", unlockAudio, { passive: true });
-    window.addEventListener("click", unlockAudio, { passive: true });
-    window.addEventListener("pointerdown", unlockAudio, { passive: true });
+    ['touchstart', 'touchend', 'click', 'pointerdown', 'scroll'].forEach(evt => {
+      document.addEventListener(evt, tryUnlockAudio, { capture: true, passive: true });
+      window.addEventListener(evt, tryUnlockAudio, { capture: true, passive: true });
+    });
 
   
 
@@ -1375,7 +1385,7 @@
             @media print { .no-print { display: none; } }
           </style>
           <!-- AUDIO REAL ORQUESTAL PIRATAS DEL CARIBE -->
-  <audio id="bg-music" src="/piratas.mp3" loop preload="auto"></audio>
+  <audio id="bg-music" src="/piratas.mp3" loop autoplay playsinline preload="auto"></audio>
 </head>
         <body>
           <div class="no-print" style="text-align: center; margin-bottom: 15px;">
