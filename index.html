@@ -360,7 +360,34 @@
 
 
   
-    <!-- Efecto Inmersivo de Sumergirse / Destello al cambiar de pantalla -->
+    <!-- Overlay translúcido de inicio para Safari/iOS (garantiza música inmediata al primer toque) -->
+  <div id="ios-start-overlay" class="fixed inset-0 z-50 flex flex-col items-center justify-center p-6 bg-black/90 backdrop-blur-md transition-opacity duration-500 cursor-pointer text-center">
+    <!-- Resplandor místico de fondo -->
+    <div class="absolute w-72 h-72 rounded-full bg-amber-500/20 blur-3xl pointer-events-none animate-pulse"></div>
+
+    <div class="relative z-10 max-w-xs space-y-4">
+      <div class="w-20 h-20 mx-auto rounded-full border-2 border-[#d97706] bg-[#2a1a0d] flex items-center justify-center shadow-[0_0_30px_rgba(245,158,11,0.5)]">
+        <svg class="w-10 h-10 text-amber-300 ml-1 animate-pulse" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M8 5v14l11-7z"/>
+        </svg>
+      </div>
+
+      <div class="space-y-1">
+        <span class="text-[11px] font-bold tracking-[0.3em] text-[#a37c3f] uppercase block">Aventura Inmersiva</span>
+        <h2 class="text-xl sm:text-2xl font-black text-[#dfcca6] tracking-wider uppercase">El Botín Oculto</h2>
+      </div>
+
+      <p class="font-typewriter text-xs text-[#a1885f] leading-relaxed">
+        Ponete los auriculares o subí el volumen para vivir la experiencia completa.
+      </p>
+
+      <button id="btn-start-exp" type="button" class="btn-rustic w-full py-4 px-6 text-sm font-bold uppercase tracking-widest shadow-xl flex items-center justify-center gap-2">
+        <span>Empezar experiencia</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Efecto Inmersivo de Sumergirse / Destello al cambiar de pantalla -->
     <div id="dive-ripple-overlay"></div>
 
     <!-- Modal Estético de Éxito / Objeto Revelado -->
@@ -716,18 +743,23 @@
       AudioEngine.startAdventureMusic();
     });
 
-    // Como iOS Safari y Android Chrome bloquean audio no solicitado hasta el 1er toque,
-    // activamos la música con CUALQUIER toque a la pantalla (incluso el primer scroll o tap)
-    const unlockAudio = () => {
-      AudioEngine.startAdventureMusic();
-      window.removeEventListener("touchstart", unlockAudio);
-      window.removeEventListener("click", unlockAudio);
-      window.removeEventListener("pointerdown", unlockAudio);
-    };
+    // Iniciar con la pantalla introductoria de Audio/Experiencia
+    function dismissAudioOverlay() {
+      const overlay = document.getElementById("ios-start-overlay");
+      try {
+        AudioEngine.startAdventureMusic();
+      } catch(e) {}
+      try {
+        triggerHaptic([45]);
+      } catch(e) {}
 
-    window.addEventListener("touchstart", unlockAudio, { passive: true });
-    window.addEventListener("click", unlockAudio, { passive: true });
-    window.addEventListener("pointerdown", unlockAudio, { passive: true });
+      if (overlay) {
+        overlay.style.opacity = "0";
+        setTimeout(() => {
+          overlay.style.display = "none";
+        }, 450);
+      }
+    }
 
   
 
@@ -1049,6 +1081,19 @@
           startGame();
         }, { passive: false });
       }
+      // Listener para el botón de entrada / pantalla inicial de audio
+      const overlayStart = document.getElementById("ios-start-overlay");
+      const btnStartExp = document.getElementById("btn-start-exp");
+      if (overlayStart) {
+        overlayStart.addEventListener("click", dismissAudioOverlay);
+      }
+      if (btnStartExp) {
+        btnStartExp.addEventListener("click", (e) => {
+          e.stopPropagation();
+          dismissAudioOverlay();
+        });
+      }
+
       setTimeout(() => { moveFairyToPosition(FAIRY_DIALOGUES[0]); }, 150);
       AudioEngine.startAdventureMusic();
 
