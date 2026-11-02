@@ -268,6 +268,46 @@
 
 
 
+  
+    <!-- Modal Estético de Éxito / Objeto Revelado -->
+    <div id="success-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md hidden transition-opacity duration-300">
+      <!-- Resplandor dorado de fondo -->
+      <div class="absolute w-72 h-72 bg-amber-500/20 rounded-full blur-2xl pointer-events-none"></div>
+
+      <div class="parchment success-card-anim w-full max-w-xs p-6 text-center border-2 border-[#826138] rounded shadow-2xl relative overflow-hidden">
+        <!-- Esquinas decorativas -->
+        <div class="corner-mark corner-tl"></div>
+        <div class="corner-mark corner-tr"></div>
+        <div class="corner-mark corner-bl"></div>
+        <div class="corner-mark corner-br"></div>
+
+        <!-- Icono / Sello de aprobación místico -->
+        <div class="w-16 h-16 mx-auto mb-3 flex items-center justify-center rounded-full bg-[#3d2712] border-2 border-[#d97706] shadow-lg relative">
+          <div class="absolute inset-0 rounded-full bg-amber-400/20 animate-ping"></div>
+          <svg class="w-8 h-8 text-[#fef08a] relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+          </svg>
+        </div>
+
+        <span class="text-[10px] font-black tracking-[0.25em] text-[#7a5529] uppercase">Marca Confirmada</span>
+        <h3 class="text-xl font-bold tracking-wider text-[#1e1307] mt-0.5 mb-2 uppercase">¡OBJETO CORRECTO!</h3>
+
+        <!-- Marco de foto capturada -->
+        <div class="w-36 h-36 mx-auto my-3 border-2 border-[#7a5529] p-1 bg-black/90 rounded shadow-inner overflow-hidden">
+          <img id="modal-success-img" class="w-full h-full object-cover rounded" alt="Objeto capturado">
+        </div>
+
+        <p id="modal-success-text" class="font-typewriter text-xs text-[#3b2713] mb-4 italic">
+          El misterio ha sido revelado.
+        </p>
+
+        <!-- Botón para avanzar conscientemente a la siguiente pista -->
+        <button id="btn-next-clue" type="button" onclick="continueToNextClue()" class="btn-rustic w-full py-3.5 px-4 font-bold text-xs tracking-widest uppercase shadow-lg">
+          [ Ver siguiente pista &rarr; ]
+        </button>
+      </div>
+    </div>
+
   <!-- Contenedor Principal: Pergamino que ocupa casi todo el alto del celular -->
   <main class="w-full max-w-md h-[95vh] max-h-[820px] flex flex-col relative z-20">
     <div id="parchment-card" class="parchment w-full h-full p-5 sm:p-7 rounded-sm flex flex-col justify-between relative overflow-hidden transition-all duration-300">
@@ -998,7 +1038,7 @@ Responde exclusivamente en JSON con esta estructura:
       const previewWrap = document.getElementById("photo-preview-wrap");
       const previewImg = document.getElementById("photo-preview-img");
 
-      if (btnText) btnText.textContent = "[ Analizando con el oráculo... ]";
+      if (btnText) btnText.textContent = "[ Analizando... ]";
 
       reader.onload = async function(e) {
         const base64Data = e.target.result;
@@ -1013,32 +1053,39 @@ Responde exclusivamente en JSON con esta estructura:
 
         if (result.valido) {
           // ===============================
-          // FOTO CORRECTA RECONOCIDA POR IA
+          // FOTO CORRECTA -> MOSTRAR ANIMACIÓN ESTÉTICA
           // ===============================
           retryCount = 0;
-          if (btnText) btnText.textContent = "[ ¡Objeto Auténtico! ]";
+          if (btnText) btnText.textContent = "[ Sacar foto ]";
 
           try { AudioEngine.playSuccessCoin(); } catch(err) {}
           try { triggerHaptic([70, 50, 70]); } catch(err) {}
 
-          parchmentCard.style.boxShadow = "0 0 40px rgba(217, 119, 6, 0.8), inset 0 0 35px rgba(217, 119, 6, 0.35)";
-          setTimeout(() => { parchmentCard.style.boxShadow = ""; }, 900);
+          // Iluminación dorada del marco
+          parchmentCard.style.boxShadow = "0 0 45px rgba(217, 119, 6, 0.85), inset 0 0 35px rgba(217, 119, 6, 0.35)";
+          setTimeout(() => { parchmentCard.style.boxShadow = ""; }, 1000);
 
-          setTimeout(() => {
-            if (previewWrap) previewWrap.classList.add("hidden");
-            if (btnText) btnText.textContent = "[ Sacar foto ]";
-            input.value = "";
+          // Cargar foto y texto en el modal de éxito estético
+          const successModal = document.getElementById("success-modal");
+          const modalImg = document.getElementById("modal-success-img");
+          const modalText = document.getElementById("modal-success-text");
+          const nextBtn = document.getElementById("btn-next-clue");
 
-            currentStepIndex++;
-            localStorage.setItem(STORAGE_KEY, currentStepIndex.toString());
+          if (modalImg) modalImg.src = base64Data;
+          if (modalText) {
+            modalText.textContent = result.motivo || "La reliquia coincide a la perfección. La senda continúa.";
+          }
 
-            if (currentStepIndex >= QUEST_STEPS.length) {
-              showScreen(screenVictory);
-            } else {
-              renderClue(currentStepIndex);
-              showFeedback(result.motivo || "¡Objeto identificado! Avanzando al siguiente rastro.", "success");
-            }
-          }, 1200);
+          const isLastStep = (currentStepIndex === QUEST_STEPS.length - 1);
+          if (nextBtn) {
+            nextBtn.textContent = isLastStep ? "[ Revelar el Botín Final &rarr; ]" : "[ Ver siguiente pista &rarr; ]";
+          }
+
+          if (successModal) {
+            successModal.classList.remove("hidden");
+          }
+
+          input.value = "";
 
         } else {
           // ===============================
@@ -1060,6 +1107,24 @@ Responde exclusivamente en JSON con esta estructura:
       };
 
       reader.readAsDataURL(file);
+    }
+
+        function continueToNextClue() {
+      try { triggerHaptic([40]); } catch(e) {}
+      const successModal = document.getElementById("success-modal");
+      if (successModal) {
+        successModal.classList.add("hidden");
+      }
+
+      currentStepIndex++;
+      localStorage.setItem(STORAGE_KEY, currentStepIndex.toString());
+
+      if (currentStepIndex >= QUEST_STEPS.length) {
+        showScreen(screenVictory);
+      } else {
+        renderClue(currentStepIndex);
+        showFeedback("Nueva pista descubierta.", "success");
+      }
     }
 
     function showFeedback(text, type) {
