@@ -339,7 +339,7 @@
         </div>
 
         <!-- Área interactiva del Hada y Diálogos secuenciales -->
-        <div id="fairy-flight-zone" onclick="advanceFairyDialogue(event)" class="my-auto relative h-[380px] w-full cursor-pointer select-none overflow-visible">
+        <div id="fairy-flight-zone"  class="my-auto relative h-[380px] w-full cursor-pointer select-none overflow-visible">
           
           <!-- HADA MÍSTICA PREMIUM ILUSTRADA -->
           <div id="fairy-entity" class="transition-all duration-700 ease-out" title="Tocá para continuar">
@@ -624,64 +624,35 @@
 
   
 
+        // ==========================================
+    // SISTEMA ESTABLE Y FLUIDO DE DIÁLOGOS DEL HADA
+    // ==========================================
     const FAIRY_DIALOGUES = [
       {
         text: "\"¡Hola! Iván te preparó una sorpresa, pero no te la va a hacer tan fácil...\"",
-        fairy: { x: 25, y: 30, tilt: 6, flip: 1 },
-        bubble: { x: 105, y: 15, tail: "tail-top", tailOffset: "18px" }
+        fairy: { x: 30, y: 20, tilt: 6, flip: 1 },
+        bubble: { x: 110, y: 15, tail: "tail-top", tailOffset: "20px" }
       },
       {
         text: "\"Vas a tener que encontrar 4 objetos especiales por la casa y sacarles una foto.\"",
-        fairy: { x: 215, y: 45, tilt: -8, flip: -1 },
-        bubble: { x: 15, y: 30, tail: "tail-top", tailOffset: "155px" }
+        fairy: { x: 220, y: 35, tilt: -8, flip: -1 },
+        bubble: { x: 15, y: 25, tail: "tail-top", tailOffset: "160px" }
       },
       {
         text: "\"Leé cada pista, capturá la foto del objeto y avanzá al siguiente destino.\"",
-        fairy: { x: 205, y: 220, tilt: 6, flip: -1 },
-        bubble: { x: 15, y: 120, tail: "tail-bottom", tailOffset: "155px" }
+        fairy: { x: 210, y: 190, tilt: 6, flip: -1 },
+        bubble: { x: 15, y: 100, tail: "tail-bottom", tailOffset: "160px" }
       },
       {
         text: "\"Al completar las 4 fotos, se revela el 5to lugar donde está la sorpresa real.\"",
-        fairy: { x: 30, y: 210, tilt: -5, flip: 1 },
-        bubble: { x: 110, y: 125, tail: "tail-bottom", tailOffset: "18px" }
+        fairy: { x: 30, y: 180, tilt: -5, flip: 1 },
+        bubble: { x: 110, y: 105, tail: "tail-bottom", tailOffset: "20px" }
       }
     ];
 
     let currentFairyIndex = 0;
-    let lastFairyPos = { x: 25, y: 35 };
-
-    function emitMagicTrail(startX, startY, endX, endY, container) {
-      const particleCount = 20;
-      const duration = 750;
-
-      for (let i = 0; i < particleCount; i++) {
-        setTimeout(() => {
-          const progress = i / particleCount;
-          const currX = startX + (endX - startX) * progress + (Math.sin(progress * Math.PI) * 18);
-          const currY = startY + (endY - startY) * progress - (Math.sin(progress * Math.PI) * 14);
-
-          const p = document.createElement("div");
-          p.className = "magic-particle";
-
-          const size = Math.random() * 6 + 3;
-          p.style.width = size + "px";
-          p.style.height = size + "px";
-          p.style.left = (currX + (Math.random() * 16 - 8)) + "px";
-          p.style.top = (currY + (Math.random() * 16 - 8)) + "px";
-
-          const colors = ["#ffffff", "#fef08a", "#fde047", "#f59e0b", "#fbbf24"];
-          p.style.background = colors[Math.floor(Math.random() * colors.length)];
-
-          const dx = (Math.random() * 30 - 15) + "px";
-          const dy = (Math.random() * 25 + 10) + "px";
-          p.style.setProperty("--dx", dx);
-          p.style.setProperty("--dy", dy);
-
-          container.appendChild(p);
-          setTimeout(() => { if (p && p.remove) p.remove(); else if (p && p.parentNode) p.parentNode.removeChild(p); }, 950);
-        }, (i * (duration / particleCount)));
-      }
-    }
+    let lastFairyPos = { x: 30, y: 20 };
+    let isAdvancingFairy = false;
 
     function moveFairyToPosition(data) {
       const fairy = document.getElementById("fairy-entity");
@@ -692,21 +663,19 @@
 
       const zoneWidth = zone.clientWidth || 300;
       
-      const finalFairyX = Math.min(data.fairy.x, Math.max(zoneWidth - 90, 10));
+      const finalFairyX = Math.min(data.fairy.x, Math.max(zoneWidth - 85, 10));
       const finalFairyY = data.fairy.y;
 
       const finalBubbleX = Math.min(data.bubble.x, Math.max(zoneWidth - 225, 10));
       const finalBubbleY = data.bubble.y;
 
-      emitMagicTrail(lastFairyPos.x + 42, lastFairyPos.y + 42, finalFairyX + 42, finalFairyY + 42, zone);
+      emitMagicTrail(lastFairyPos.x + 40, lastFairyPos.y + 40, finalFairyX + 40, finalFairyY + 40, zone);
       lastFairyPos = { x: finalFairyX, y: finalFairyY };
 
-      // El hada se mueve volando
       fairy.style.left = finalFairyX + "px";
       fairy.style.top = finalFairyY + "px";
       fairy.style.transform = `scaleX(${data.fairy.flip}) rotate(${data.fairy.tilt}deg)`;
 
-      // El globito de texto también se mueve a la posición correspondiente
       bubble.style.left = finalBubbleX + "px";
       bubble.style.top = finalBubbleY + "px";
 
@@ -716,18 +685,18 @@
       }
     }
 
-        function advanceFairyDialogue(event) {
+    function advanceFairyDialogue(event) {
       if (event) {
         event.stopPropagation();
       }
 
-      try {
-        AudioEngine.startAdventureMusic();
-      } catch(e) {}
+      // Evitar doble salto por eventos click + touch simultáneos
+      if (isAdvancingFairy) return;
+      isAdvancingFairy = true;
+      setTimeout(() => { isAdvancingFairy = false; }, 320);
 
-      try {
-        triggerHaptic([35]);
-      } catch(e) {}
+      try { AudioEngine.startAdventureMusic(); } catch(e) {}
+      try { triggerHaptic([35]); } catch(e) {}
 
       currentFairyIndex = (currentFairyIndex + 1) % FAIRY_DIALOGUES.length;
       updateFairyDisplay();
@@ -748,7 +717,7 @@
         setTimeout(() => {
           textEl.textContent = current.text;
           textEl.style.opacity = "1";
-        }, 150);
+        }, 120);
       }
 
       if (counterEl) {
@@ -758,11 +727,6 @@
       moveFairyToPosition(current);
     }
 
-        // Catálogo de 4 Marcas QR y 5to lugar final de sorpresa
-        // Catálogo de 4 Fotos a Objetos y 5to lugar de sorpresa
-        // Catálogo de 4 Fotos con validación inteligente por IA (Gemini Vision)
-        // Catálogo de 4 Fotos con validación inteligente generosa y flexible por IA
-        // Catálogo de 4 Fotos con pistas sutiles y misteriosas
     const QUEST_STEPS = [
       {
         step: 0,
@@ -833,24 +797,11 @@
       }
       const flightZone = document.getElementById("fairy-flight-zone");
       if (flightZone) {
-        flightZone.addEventListener("click", advanceFairyDialogue);
-        flightZone.addEventListener("touchstart", (e) => {
+        const handleDialogueTap = (e) => {
+          if (e.target && e.target.closest("#btn-accept")) return;
           advanceFairyDialogue(e);
-        }, { passive: true });
-      }
-
-      const fairyEnt = document.getElementById("fairy-entity");
-      if (fairyEnt) {
-        fairyEnt.addEventListener("click", advanceFairyDialogue);
-      }
-
-      const bubbleEnt = document.getElementById("fairy-speech-bubble");
-      if (bubbleEnt) {
-        bubbleEnt.style.pointerEvents = "auto";
-        bubbleEnt.addEventListener("click", advanceFairyDialogue);
-        bubbleEnt.addEventListener("touchstart", (e) => {
-          advanceFairyDialogue(e);
-        }, { passive: true });
+        };
+        flightZone.addEventListener("pointerdown", handleDialogueTap);
       }
       const btnAccept = document.getElementById("btn-accept");
       if (btnAccept) {
@@ -1230,24 +1181,11 @@ Responde exclusivamente en JSON con esta estructura:
       }
       const flightZone = document.getElementById("fairy-flight-zone");
       if (flightZone) {
-        flightZone.addEventListener("click", advanceFairyDialogue);
-        flightZone.addEventListener("touchstart", (e) => {
+        const handleDialogueTap = (e) => {
+          if (e.target && e.target.closest("#btn-accept")) return;
           advanceFairyDialogue(e);
-        }, { passive: true });
-      }
-
-      const fairyEnt = document.getElementById("fairy-entity");
-      if (fairyEnt) {
-        fairyEnt.addEventListener("click", advanceFairyDialogue);
-      }
-
-      const bubbleEnt = document.getElementById("fairy-speech-bubble");
-      if (bubbleEnt) {
-        bubbleEnt.style.pointerEvents = "auto";
-        bubbleEnt.addEventListener("click", advanceFairyDialogue);
-        bubbleEnt.addEventListener("touchstart", (e) => {
-          advanceFairyDialogue(e);
-        }, { passive: true });
+        };
+        flightZone.addEventListener("pointerdown", handleDialogueTap);
       }
       const btnAccept = document.getElementById("btn-accept");
       if (btnAccept) {
