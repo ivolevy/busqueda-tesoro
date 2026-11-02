@@ -110,7 +110,8 @@
       z-index: 40;
       transition: left 0.85s cubic-bezier(0.34, 1.56, 0.64, 1), 
                   top 0.85s cubic-bezier(0.34, 1.56, 0.64, 1), 
-                  transform 0.5s ease;
+                  transform 0.85s ease,
+                  opacity 0.75s ease;
       cursor: pointer;
       filter: drop-shadow(0 0 16px rgba(251, 191, 36, 0.55));
     }
@@ -428,7 +429,7 @@
               </p>
               <div class="flex items-center justify-between text-[10px] tracking-wider text-[#7a5529] uppercase mt-2 pt-1 border-t border-[#7a5529]/20 font-bold">
                 <span id="fairy-step-counter">1 / 4</span>
-                <span class="animate-pulse">Tocá ▸</span>
+                <span id="fairy-prompt-hint" class="animate-pulse">Tocá ▸</span>
               </div>
             </div>
             <!-- Colita del globo que apunta al hada -->
@@ -658,6 +659,7 @@
     let currentFairyIndex = 0;
     let lastFairyPos = { x: 40, y: 30 };
     let isAdvancingFairy = false;
+    let isFairyDismissed = false;
 
     function emitMagicTrail(startX, startY, endX, endY, container) {
       if (!container) return;
@@ -730,10 +732,57 @@
       }
     }
 
+    function dismissFairyFlying() {
+      if (isFairyDismissed) return;
+      isFairyDismissed = true;
+
+      const fairy = document.getElementById("fairy-entity");
+      const bubble = document.getElementById("fairy-speech-bubble");
+      const zone = document.getElementById("fairy-flight-zone");
+
+      // Ocultar globito con desvanecimiento y escala
+      if (bubble) {
+        bubble.style.transition = "opacity 0.4s ease, transform 0.4s ease";
+        bubble.style.opacity = "0";
+        bubble.style.transform = "scale(0.85)";
+        setTimeout(() => {
+          bubble.style.display = "none";
+        }, 400);
+      }
+
+      // El hada vuela hacia arriba y afuera de la pantalla dejando un rastro mágico de despedida
+      if (fairy && zone) {
+        const zoneWidth = zone.clientWidth || 320;
+        const exitX = zoneWidth + 80; // Vuela hacia arriba a la derecha saliendo de la pantalla
+        const exitY = -120;
+
+        emitMagicTrail(lastFairyPos.x + 40, lastFairyPos.y + 40, exitX, exitY, zone);
+
+        fairy.style.transition = "left 1.2s cubic-bezier(0.25, 1, 0.5, 1), top 1.2s cubic-bezier(0.25, 1, 0.5, 1), transform 1.2s ease, opacity 0.8s ease 0.4s";
+        fairy.style.left = exitX + "px";
+        fairy.style.top = exitY + "px";
+        fairy.style.transform = "scale(0.4) rotate(25deg)";
+        fairy.style.opacity = "0";
+
+        setTimeout(() => {
+          fairy.style.display = "none";
+        }, 1300);
+      }
+
+      // Resaltar aún más el botón de avanzar
+      const btn = document.getElementById("btn-accept");
+      if (btn) {
+        btn.classList.add("ring-4", "ring-[#f59e0b]", "scale-[1.02]");
+      }
+    }
+
     function advanceFairyDialogue(event) {
       if (event && event.stopPropagation) {
         event.stopPropagation();
       }
+
+      // Si el hada ya se fue volando, no procesar más
+      if (isFairyDismissed) return;
 
       // Evitar saltos fantasma o dobles toques instantáneos
       if (isAdvancingFairy) return;
@@ -743,7 +792,13 @@
       try { AudioEngine.startAdventureMusic(); } catch(e) {}
       try { triggerHaptic([35]); } catch(e) {}
 
-      currentFairyIndex = (currentFairyIndex + 1) % FAIRY_DIALOGUES.length;
+      // Si estábamos en el último paso (paso 4, índice 3), al tocar se va volando
+      if (currentFairyIndex === FAIRY_DIALOGUES.length - 1) {
+        dismissFairyFlying();
+        return;
+      }
+
+      currentFairyIndex = currentFairyIndex + 1;
       updateFairyDisplay();
 
       if (currentFairyIndex === FAIRY_DIALOGUES.length - 1) {
@@ -756,6 +811,7 @@
       const current = FAIRY_DIALOGUES[currentFairyIndex];
       const textEl = document.getElementById("fairy-text");
       const counterEl = document.getElementById("fairy-step-counter");
+      const fairyPromptEl = document.getElementById("fairy-prompt-hint");
 
       if (textEl) {
         textEl.style.opacity = "0";
@@ -767,6 +823,14 @@
 
       if (counterEl) {
         counterEl.textContent = `${currentFairyIndex + 1} / ${FAIRY_DIALOGUES.length}`;
+      }
+
+      if (fairyPromptEl) {
+        if (currentFairyIndex === FAIRY_DIALOGUES.length - 1) {
+          fairyPromptEl.textContent = "¡Despedir! ▸";
+        } else {
+          fairyPromptEl.textContent = "Tocá ▸";
+        }
       }
 
       moveFairyToPosition(current);
@@ -1219,15 +1283,30 @@ Responde exclusivamente en JSON con esta estructura:
       currentStepIndex = 0;
       currentFairyIndex = 0;
       retryCount = 0;
+      isFairyDismissed = false;
 
       // Ocultar modal de éxito si hubiera quedado abierto
       const successModal = document.getElementById("success-modal");
       if (successModal) successModal.classList.add("hidden");
 
+      // Restaurar visibilidad y estilos del hada y globito
+      const fairy = document.getElementById("fairy-entity");
+      const bubble = document.getElementById("fairy-speech-bubble");
+      if (fairy) {
+        fairy.style.display = "";
+        fairy.style.opacity = "1";
+        fairy.style.transition = "left 0.85s cubic-bezier(0.34, 1.56, 0.64, 1), top 0.85s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.85s ease, opacity 0.75s ease";
+      }
+      if (bubble) {
+        bubble.style.display = "";
+        bubble.style.opacity = "1";
+        bubble.style.transform = "scale(1)";
+      }
+
       // Resetear botón de avanzar
       const btnAccept = document.getElementById("btn-accept");
       if (btnAccept) {
-        btnAccept.classList.remove("ring-2", "ring-[#a37c3f]", "ring-[#f59e0b]");
+        btnAccept.classList.remove("ring-2", "ring-4", "ring-[#a37c3f]", "ring-[#f59e0b]", "scale-[1.02]");
       }
 
       // Reiniciar diálogo del hada a la posición inicial
