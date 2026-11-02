@@ -445,7 +445,7 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
             </svg>
-            <span id="btn-photo-text">[ Sacar Foto del Objeto ]</span>
+            <span id="btn-photo-text">[ Sacar foto ]</span>
           </button>
         </div>
       </div>
@@ -727,9 +727,9 @@
         step: 0,
         roman: "OBJETO I DE IV",
         title: "Pista I",
-        subtitle: "Caja de Chocolates Lindt",
-        riddle: "Oculto en la cocina, dentro de una tentación suiza de chocolate Lindt. Sacale una foto para continuar.",
-        aiCheck: "Determina si la imagen muestra chocolates, una caja, paquete, envoltorio, golosina o dulces Lindt (o cualquier dulce/chocolate). Sé MUY flexible y tolerante con ángulos, desenfoque o poca luz. Si hay duda razonable de que es chocolate o su paquete, apruébalo."
+        subtitle: "Tentación en la Cocina",
+        riddle: "En la cocina, guardada en la penumbra de un mueble, aguarda una dulce y refinada tentación traída de tierras suizas. Sacale una foto para empezar.",
+        aiCheck: "Determina si la imagen muestra chocolates, una caja, paquete, envoltorio, bombón, golosina o dulces Lindt (o cualquier chocolate/caja de bombones). Sé MUY flexible y tolerante con ángulos, desenfoque o poca luz. Si hay duda razonable de que es chocolate o su paquete, apruébalo."
       },
       {
         step: 1,
@@ -1026,7 +1026,7 @@ Responde exclusivamente en JSON con esta estructura:
 
           setTimeout(() => {
             if (previewWrap) previewWrap.classList.add("hidden");
-            if (btnText) btnText.textContent = "[ Sacar Foto del Objeto ]";
+            if (btnText) btnText.textContent = "[ Sacar foto ]";
             input.value = "";
 
             currentStepIndex++;
@@ -1045,7 +1045,7 @@ Responde exclusivamente en JSON con esta estructura:
           // FOTO INCORRECTA
           // ===============================
           retryCount++;
-          if (btnText) btnText.textContent = "[ Sacar Foto del Objeto ]";
+          if (btnText) btnText.textContent = "[ Sacar foto ]";
           input.value = "";
 
           try { AudioEngine.playErrorThud(); } catch(err) {}
@@ -1055,8 +1055,7 @@ Responde exclusivamente en JSON con esta estructura:
           void parchmentCard.offsetWidth;
           parchmentCard.classList.add("shake-anim");
 
-          const fallbackMsg = result.motivo || "Ese no parece ser el objeto de la pista. Leela bien y volvé a probar.";
-          showFeedback(fallbackMsg, "error");
+          showFeedback("Objeto incorrecto.", "error");
         }
       };
 
