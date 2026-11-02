@@ -414,7 +414,7 @@
         </div>
 
         <!-- Área interactiva del Hada y Diálogos secuenciales -->
-        <div id="fairy-flight-zone"  class="my-auto relative h-[380px] w-full cursor-pointer select-none overflow-visible">
+        <div id="fairy-flight-zone" style="touch-action: manipulation;" class="my-auto relative h-[380px] w-full cursor-pointer select-none overflow-visible">
           
           <!-- HADA MÍSTICA PREMIUM ILUSTRADA -->
           <div id="fairy-entity" class="transition-all duration-700 ease-out" title="Tocá para continuar">
@@ -738,6 +738,7 @@
     let lastFairyPos = { x: 40, y: 30 };
     let isAdvancingFairy = false;
     let isFairyDismissed = false;
+    let lastFairyAdvanceTime = 0;
 
     function emitMagicTrail(startX, startY, endX, endY, container) {
       if (!container) return;
@@ -855,17 +856,25 @@
     }
 
     function advanceFairyDialogue(event) {
-      if (event && event.stopPropagation) {
-        event.stopPropagation();
+      if (event) {
+        if (event.stopPropagation) event.stopPropagation();
+        if (event.cancelable && event.type === "touchend") event.preventDefault();
       }
 
       // Si el hada ya se fue volando, no procesar más
       if (isFairyDismissed) return;
 
-      // Evitar saltos fantasma o dobles toques instantáneos
+      // En iOS Safari, un tap genera pointerdown -> touchend -> click con ~300ms de diferencia.
+      // Un bloqueo estricto por timestamp de 450ms evita completamente los saltos dobles.
+      const now = Date.now();
+      if (now - lastFairyAdvanceTime < 450) {
+        return;
+      }
+      lastFairyAdvanceTime = now;
+
       if (isAdvancingFairy) return;
       isAdvancingFairy = true;
-      setTimeout(() => { isAdvancingFairy = false; }, 280);
+      setTimeout(() => { isAdvancingFairy = false; }, 400);
 
       try { AudioEngine.startAdventureMusic(); } catch(e) {}
       try { triggerHaptic([35]); } catch(e) {}
@@ -988,9 +997,9 @@
           if (e.target && e.target.closest("#btn-accept")) return;
           advanceFairyDialogue(e);
         };
-        // Soporte robusto multidispositivo (click, touchend y pointerdown)
+        // En iOS Safari pointerdown + click se duplican. 
+        // Usamos 'click' con touch-action optimizado y el throttle temporal en advanceFairyDialogue.
         flightZone.addEventListener("click", handleDialogueTap);
-        flightZone.addEventListener("pointerdown", handleDialogueTap);
       }
             const btnReset = document.getElementById("btn-reset-game");
       if (btnReset) {
